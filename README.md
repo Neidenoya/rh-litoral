@@ -35,10 +35,17 @@ RH_Litoral/
 │   └── RH-Litoral-Documentacao-Tecnica.docx   # Documento de arquitetura e especificação funcional
 ├── prototipo/
 │   └── index.html                             # Protótipo de alta fidelidade (abre direto no navegador)
+├── app/                                       # Aplicação (Fase 2) — ver app/README.md
+│   ├── backend/                               # NestJS + Prisma + PostgreSQL (API REST)
+│   └── frontend/                              # React + Vite + TypeScript (SPA)
 ├── ARQUITETURA.md                             # Versão navegável da especificação técnica
 ├── .gitignore
 └── README.md
 ```
+
+> **Fase 2 em andamento** — o scaffold da aplicação está em [`app/`](app/README.md):
+> schema PostgreSQL completo, organograma via CTE recursiva, RBAC e as telas Dashboard /
+> Organograma / Colaboradores consumindo a API. Setup e endpoints em [`app/README.md`](app/README.md).
 
 ### Protótipo
 

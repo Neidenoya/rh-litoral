@@ -1,0 +1,356 @@
+// RH Litoral — modelo de dados (PostgreSQL)
+// Organograma é PROJEÇÃO do auto-relacionamento Colaborador.gestorImediatoId
+// (raiz = NULL), resolvido via CTE recursiva — não há tabela de organograma.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────── Enums ─────────────────────────
+
+enum TipoContrato {
+  CLT
+  EXPERIENCIA
+  ESTAGIO
+  PJ
+  TEMPORARIO
+}
+
+enum StatusColaborador {
+  ATIVO
+  EXPERIENCIA
+  AFASTADO
+  DESLIGADO
+}
+
+enum EstadoCivil {
+  SOLTEIRO
+  CASADO
+  DIVORCIADO
+  VIUVO
+  UNIAO_ESTAVEL
+}
+
+enum StatusVaga {
+  ABERTA
+  TRIAGEM
+  ENTREVISTA_RH
+  ENTREVISTA_GESTOR
+  APROVADO
+  CONTRATADO
+  CANCELADA
+}
+
+enum PrioridadeVaga {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum StatusFerias {
+  PROGRAMADA
+  EM_ANDAMENTO
+  CONCLUIDA
+  VENCIDA
+}
+
+enum TipoTreinamento {
+  OBRIGATORIO
+  OPCIONAL
+}
+
+enum StatusTreinamento {
+  VALIDO
+  VENCIDO
+  PENDENTE
+}
+
+enum TipoDocumento {
+  CONTRATO
+  RG
+  CPF
+  CNH
+  ASO
+  EXAME
+  ADVERTENCIA
+  OUTRO
+}
+
+enum Perfil {
+  DIRETORIA
+  RH
+  FINANCEIRO
+  JURIDICO
+  GESTOR
+  COLABORADOR
+}
+
+// ──────────────────── Entidades de apoio ────────────────────
+
+model Empresa {
+  id           String        @id @default(uuid())
+  razaoSocial  String        @map("razao_social")
+  cnpj         String        @unique
+  colaboradores Colaborador[]
+
+  @@map("empresa")
+}
+
+model Shopping {
+  id            String        @id @default(uuid())
+  nome          String
+  endereco      String?
+  cidade        String?
+  estado        String?
+  colaboradores Colaborador[]
+  vagas         Vaga[]
+
+  @@map("shopping")
+}
+
+model Departamento {
+  id            String        @id @default(uuid())
+  nome          String
+  descricao     String?
+  colaboradores Colaborador[]
+  centrosCusto  CentroCusto[]
+  vagas         Vaga[]
+
+  @@map("departamento")
+}
+
+model Cargo {
+  id               String        @id @default(uuid())
+  nome             String
+  nivelHierarquico Int           @default(0) @map("nivel_hierarquico")
+  faixaSalarialMin Decimal?      @map("faixa_salarial_min") @db.Decimal(12, 2)
+  faixaSalarialMax Decimal?      @map("faixa_salarial_max") @db.Decimal(12, 2)
+  colaboradores    Colaborador[]
+  vagas            Vaga[]
+
+  @@map("cargo")
+}
+
+model CentroCusto {
+  id             String        @id @default(uuid())
+  codigo         String        @unique
+  descricao      String?
+  departamento   Departamento? @relation(fields: [departamentoId], references: [id])
+  departamentoId String?       @map("departamento_id")
+  colaboradores  Colaborador[]
+
+  @@map("centro_custo")
+}
+
+// ──────────────────── Entidade central ────────────────────
+
+model Colaborador {
+  id            String  @id @default(uuid())
+  matricula     String  @unique
+  nomeCompleto  String  @map("nome_completo")
+  // cpf criptografado em repouso (AES-256-GCM); mascarado na API por RBAC
+  cpf           String?
+  rg            String?
+  fotoUrl       String? @map("foto_url")
+
+  cargo          Cargo        @relation(fields: [cargoId], references: [id])
+  cargoId        String       @map("cargo_id")
+  departamento   Departamento @relation(fields: [departamentoId], references: [id])
+  departamentoId String       @map("departamento_id")
+  shopping       Shopping     @relation(fields: [shoppingId], references: [id])
+  shoppingId     String       @map("shopping_id")
+  empresa        Empresa      @relation(fields: [empresaId], references: [id])
+  empresaId      String       @map("empresa_id")
+  centroCusto    CentroCusto? @relation(fields: [centroCustoId], references: [id])
+  centroCustoId  String?      @map("centro_custo_id")
+
+  // auto-relacionamento — base do organograma automático
+  gestorImediato   Colaborador?  @relation("Hierarquia", fields: [gestorImediatoId], references: [id])
+  gestorImediatoId String?       @map("gestor_imediato_id")
+  subordinados     Colaborador[] @relation("Hierarquia")
+
+  dataAdmissao       DateTime  @map("data_admissao") @db.Date
+  dataDesligamento   DateTime? @map("data_desligamento") @db.Date
+  motivoDesligamento String?   @map("motivo_desligamento")
+  fimExperiencia     DateTime? @map("fim_experiencia") @db.Date
+
+  tipoContrato  TipoContrato      @map("tipo_contrato")
+  salario       Decimal           @db.Decimal(12, 2)
+  cargaHoraria  String?           @map("carga_horaria")
+  escala        String?
+  horarioEntrada String?          @map("horario_entrada")
+  horarioSaida   String?          @map("horario_saida")
+
+  telefone     String?
+  celular      String?
+  email        String?       @unique
+  endereco     String?
+  estadoCivil  EstadoCivil?  @map("estado_civil")
+  escolaridade String?
+  cursos       String[]
+  status       StatusColaborador @default(EXPERIENCIA)
+  dataAniversario String?      @map("data_aniversario")
+
+  ferias        Ferias[]
+  documentos    Documento[]
+  avaliacoes    AvaliacaoDesempenho[]
+  treinamentos  ColaboradorTreinamento[]
+  vagasSolicitadas Vaga[]     @relation("VagaSolicitante")
+  usuario       Usuario?
+
+  criadoEm     DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  @@index([shoppingId, departamentoId, status])
+  @@index([gestorImediatoId])
+  @@map("colaborador")
+}
+
+// ──────────────────── Recrutamento ────────────────────
+
+model Vaga {
+  id                  String         @id @default(uuid())
+  cargo               Cargo          @relation(fields: [cargoId], references: [id])
+  cargoId             String         @map("cargo_id")
+  departamento        Departamento   @relation(fields: [departamentoId], references: [id])
+  departamentoId      String         @map("departamento_id")
+  shopping            Shopping       @relation(fields: [shoppingId], references: [id])
+  shoppingId          String         @map("shopping_id")
+  gestorSolicitante   Colaborador    @relation("VagaSolicitante", fields: [gestorSolicitanteId], references: [id])
+  gestorSolicitanteId String         @map("gestor_solicitante_id")
+  status              StatusVaga     @default(ABERTA)
+  prioridade          PrioridadeVaga @default(MEDIA)
+  dataAbertura        DateTime       @default(now()) @map("data_abertura") @db.Date
+  candidatos          Candidato[]    @relation("VagaCandidatos")
+  candidatoAprovado   Candidato?     @relation("VagaAprovado", fields: [candidatoAprovadoId], references: [id])
+  candidatoAprovadoId String?        @unique @map("candidato_aprovado_id")
+
+  @@index([status, prioridade])
+  @@map("vaga")
+}
+
+model Candidato {
+  id            String   @id @default(uuid())
+  nome          String
+  email         String?
+  telefone      String?
+  curriculoUrl  String?  @map("curriculo_url")
+  vaga          Vaga     @relation("VagaCandidatos", fields: [vagaId], references: [id])
+  vagaId        String   @map("vaga_id")
+  etapaAtual    String?  @map("etapa_atual")
+  dataInscricao DateTime @default(now()) @map("data_inscricao")
+  avaliacaoRh     Int?   @map("avaliacao_rh")
+  avaliacaoGestor Int?   @map("avaliacao_gestor")
+  vagaAprovadaEm  Vaga?  @relation("VagaAprovado")
+
+  @@map("candidato")
+}
+
+// ──────────────────── Pessoas: ciclo de vida ────────────────────
+
+model Ferias {
+  id                     String       @id @default(uuid())
+  colaborador            Colaborador  @relation(fields: [colaboradorId], references: [id])
+  colaboradorId          String       @map("colaborador_id")
+  periodoAquisitivoInicio DateTime    @map("periodo_aquisitivo_inicio") @db.Date
+  periodoAquisitivoFim    DateTime    @map("periodo_aquisitivo_fim") @db.Date
+  dataInicioGozo         DateTime?    @map("data_inicio_gozo") @db.Date
+  dataFimGozo            DateTime?    @map("data_fim_gozo") @db.Date
+  diasUtilizados         Int          @default(0) @map("dias_utilizados")
+  saldoDias              Int          @default(30) @map("saldo_dias")
+  status                 StatusFerias @default(PROGRAMADA)
+
+  @@index([colaboradorId])
+  @@map("ferias")
+}
+
+model Treinamento {
+  id            String          @id @default(uuid())
+  nome          String
+  tipo          TipoTreinamento @default(OPCIONAL)
+  cargaHoraria  Int?            @map("carga_horaria")
+  validadeMeses Int?            @map("validade_meses")
+  colaboradores ColaboradorTreinamento[]
+
+  @@map("treinamento")
+}
+
+model ColaboradorTreinamento {
+  id             String            @id @default(uuid())
+  colaborador    Colaborador       @relation(fields: [colaboradorId], references: [id])
+  colaboradorId  String            @map("colaborador_id")
+  treinamento    Treinamento       @relation(fields: [treinamentoId], references: [id])
+  treinamentoId  String            @map("treinamento_id")
+  dataRealizacao DateTime?         @map("data_realizacao") @db.Date
+  dataVencimento DateTime?         @map("data_vencimento") @db.Date
+  status         StatusTreinamento @default(PENDENTE)
+  certificadoUrl String?           @map("certificado_url")
+
+  @@unique([colaboradorId, treinamentoId])
+  @@map("colaborador_treinamento")
+}
+
+model Documento {
+  id             String        @id @default(uuid())
+  colaborador    Colaborador   @relation(fields: [colaboradorId], references: [id])
+  colaboradorId  String        @map("colaborador_id")
+  tipo           TipoDocumento @default(OUTRO)
+  arquivoUrl     String        @map("arquivo_url")
+  dataUpload     DateTime      @default(now()) @map("data_upload")
+  usuarioUpload  Usuario?      @relation(fields: [usuarioUploadId], references: [id])
+  usuarioUploadId String?      @map("usuario_upload_id")
+
+  @@index([colaboradorId])
+  @@map("documento")
+}
+
+model AvaliacaoDesempenho {
+  id              String      @id @default(uuid())
+  colaborador     Colaborador @relation(fields: [colaboradorId], references: [id])
+  colaboradorId   String      @map("colaborador_id")
+  ciclo           String?
+  periodo         String?
+  notaGestor      Decimal?    @map("nota_gestor") @db.Decimal(4, 2)
+  notaAutoavaliacao Decimal?  @map("nota_autoavaliacao") @db.Decimal(4, 2)
+  metas           Json?
+  pdiUrl          String?     @map("pdi_url")
+
+  @@index([colaboradorId])
+  @@map("avaliacao_desempenho")
+}
+
+// ──────────────────── Acesso e auditoria ────────────────────
+
+model Usuario {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  senhaHash     String       @map("senha_hash")
+  perfil        Perfil       @default(COLABORADOR)
+  ativo         Boolean      @default(true)
+  colaborador   Colaborador? @relation(fields: [colaboradorId], references: [id])
+  colaboradorId String?      @unique @map("colaborador_id")
+  documentos    Documento[]
+  criadoEm      DateTime     @default(now()) @map("criado_em")
+
+  @@map("usuario")
+}
+
+model LogAuditoria {
+  id            String   @id @default(uuid())
+  usuarioId     String?  @map("usuario_id")
+  entidade      String
+  entidadeId    String   @map("entidade_id")
+  campoAlterado String   @map("campo_alterado")
+  valorAnterior String?  @map("valor_anterior")
+  valorNovo     String?  @map("valor_novo")
+  dataHora      DateTime @default(now()) @map("data_hora")
+
+  @@index([entidade, entidadeId])
+  @@map("log_auditoria")
+}
