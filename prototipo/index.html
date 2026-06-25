@@ -1,0 +1,3197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RH Litoral | Gestão Estratégica de Pessoas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<style>
+/* ============================================================
+   DESIGN TOKENS — RH Litoral
+   ============================================================ */
+:root{
+  --c-primary-900:#0F2A4A;
+  --c-primary-800:#16385E;
+  --c-primary-700:#1E4976;
+  --c-primary-600:#2563EB;
+  --c-primary-500:#3B82F6;
+  --c-primary-100:#DBEAFE;
+  --c-primary-50:#EFF5FF;
+
+  --c-accent:#0D9488;
+  --c-accent-100:#CCFBF1;
+
+  --c-success:#16A34A;
+  --c-success-bg:#DCFCE7;
+  --c-warning:#D97706;
+  --c-warning-bg:#FEF3C7;
+  --c-danger:#DC2626;
+  --c-danger-bg:#FEE2E2;
+  --c-info:#0EA5E9;
+  --c-info-bg:#E0F2FE;
+
+  --bg-app:#F4F6F9;
+  --bg-surface:#FFFFFF;
+  --bg-surface-alt:#F8FAFC;
+  --bg-sidebar:#0F2A4A;
+  --border-subtle:#E2E8F0;
+  --border-strong:#CBD5E1;
+
+  --text-primary:#0F1B2D;
+  --text-secondary:#5B6B82;
+  --text-tertiary:#94A3B8;
+  --text-on-dark:#E8EEF7;
+  --text-on-dark-dim:#90A4C2;
+
+  --shadow-sm:0 1px 2px rgba(15,27,45,0.06);
+  --shadow-md:0 4px 14px rgba(15,27,45,0.08);
+  --shadow-lg:0 12px 32px rgba(15,27,45,0.14);
+
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+
+  --font-ui:'Inter',sans-serif;
+  --font-display:'Manrope',sans-serif;
+
+  --sidebar-w:248px;
+  --sidebar-w-collapsed:76px;
+}
+
+html.dark{
+  --bg-app:#0B1626;
+  --bg-surface:#11203A;
+  --bg-surface-alt:#0E1B30;
+  --bg-sidebar:#081222;
+  --border-subtle:#1E3354;
+  --border-strong:#2A476F;
+
+  --text-primary:#EAF0FA;
+  --text-secondary:#9BB0CC;
+  --text-tertiary:#6B82A3;
+
+  --c-primary-50:#102A4A;
+  --c-primary-100:#16385E;
+
+  --success-bg:#0F3322;
+  --warning-bg:#3A2A0B;
+  --danger-bg:#3A1212;
+  --c-success-bg:#103321;
+  --c-warning-bg:#3A2B0C;
+  --c-danger-bg:#3B1418;
+  --c-info-bg:#0D2B3D;
+
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:0 4px 14px rgba(0,0,0,0.35);
+  --shadow-lg:0 16px 40px rgba(0,0,0,0.5);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-ui);
+  background:var(--bg-app);
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease, color .25s ease;
+}
+#root{min-height:100vh;}
+button{font-family:inherit;}
+::selection{background:var(--c-primary-100);}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:8px;}
+
+/* ============== APP SHELL ============== */
+.app-shell{display:flex;min-height:100vh;}
+
+/* ---- SIDEBAR ---- */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--bg-sidebar);
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  transition:width .2s ease;
+  position:relative;
+  z-index:20;
+}
+.sidebar.collapsed{width:var(--sidebar-w-collapsed);}
+.sidebar-brand{
+  display:flex;align-items:center;gap:10px;
+  padding:22px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  white-space:nowrap;
+  overflow:hidden;
+}
+.sidebar-brand-mark{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c-primary-600),var(--c-accent));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:800;color:white;font-size:15px;
+}
+.sidebar-brand-text{font-family:var(--font-display);font-weight:800;font-size:16.5px;color:#fff;letter-spacing:.2px;}
+.sidebar-brand-sub{font-size:10.5px;color:var(--text-on-dark-dim);letter-spacing:.6px;text-transform:uppercase;margin-top:1px;}
+
+.sidebar-nav{flex:1;overflow-y:auto;padding:14px 12px;}
+.nav-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;margin-bottom:2px;
+  border-radius:9px;
+  color:var(--text-on-dark-dim);
+  font-size:13.5px;font-weight:500;
+  cursor:pointer;white-space:nowrap;overflow:hidden;
+  transition:background .15s, color .15s;
+  position:relative;
+}
+.nav-item svg{flex-shrink:0;width:18px;height:18px;}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.nav-item.active{background:linear-gradient(135deg,var(--c-primary-600),#2D7BF0);color:#fff;box-shadow:var(--shadow-sm);}
+.nav-item-label{overflow:hidden;text-overflow:ellipsis;}
+.sidebar.collapsed .nav-item-label,
+.sidebar.collapsed .sidebar-brand-text,
+.sidebar.collapsed .sidebar-brand-sub{display:none;}
+.sidebar.collapsed .nav-item{justify-content:center;}
+.sidebar.collapsed .sidebar-brand{justify-content:center;}
+
+.sidebar-collapse-btn{
+  margin:10px 14px 16px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px;border-radius:8px;
+  background:rgba(255,255,255,0.05);
+  color:var(--text-on-dark-dim);
+  font-size:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.07);
+}
+.sidebar-collapse-btn:hover{background:rgba(255,255,255,0.09);color:#fff;}
+
+/* ---- MAIN AREA ---- */
+.main-area{flex:1;display:flex;flex-direction:column;min-width:0;}
+
+/* ---- TOPBAR ---- */
+.topbar{
+  height:68px;flex-shrink:0;
+  background:var(--bg-surface);
+  border-bottom:1px solid var(--border-subtle);
+  display:flex;align-items:center;
+  padding:0 28px;gap:20px;
+  position:sticky;top:0;z-index:10;
+}
+.topbar-title{font-family:var(--font-display);font-weight:800;font-size:19px;color:var(--text-primary);white-space:nowrap;}
+.topbar-search{
+  flex:1;max-width:420px;
+  display:flex;align-items:center;gap:9px;
+  background:var(--bg-surface-alt);
+  border:1px solid var(--border-subtle);
+  border-radius:10px;padding:9px 14px;
+  color:var(--text-tertiary);
+  transition:border-color .15s;
+}
+.topbar-search:focus-within{border-color:var(--c-primary-500);}
+.topbar-search input{
+  border:none;outline:none;background:transparent;
+  font-size:13.5px;color:var(--text-primary);width:100%;font-family:inherit;
+}
+.topbar-search svg{flex-shrink:0;width:16px;height:16px;}
+.topbar-spacer{flex:1;}
+.topbar-actions{display:flex;align-items:center;gap:14px;}
+
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg-surface-alt);border:1px solid var(--border-subtle);
+  color:var(--text-secondary);cursor:pointer;position:relative;
+  transition:background .15s,color .15s;
+}
+.icon-btn:hover{background:var(--c-primary-50);color:var(--c-primary-600);}
+.icon-btn svg{width:17px;height:17px;}
+.icon-btn .dot{
+  position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;
+  background:var(--c-danger);border:1.5px solid var(--bg-surface);
+}
+
+.topbar-user{display:flex;align-items:center;gap:10px;padding-left:10px;border-left:1px solid var(--border-subtle);cursor:pointer;}
+.topbar-user-name{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.2;}
+.topbar-user-role{font-size:11px;color:var(--text-tertiary);}
+
+.avatar{
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;color:#fff;flex-shrink:0;
+}
+
+/* ---- CONTENT ---- */
+.content{flex:1;padding:26px 28px 40px;overflow-x:hidden;}
+.content-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+.content-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--c-primary-600);margin-bottom:4px;}
+.content-h1{font-family:var(--font-display);font-weight:800;font-size:26px;color:var(--text-primary);letter-spacing:-.2px;}
+.content-sub{font-size:13.5px;color:var(--text-secondary);margin-top:4px;}
+
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 16px;border-radius:9px;font-size:13px;font-weight:600;
+  cursor:pointer;border:1px solid transparent;font-family:inherit;
+  transition:transform .1s, box-shadow .15s, background .15s;
+}
+.btn:active{transform:scale(0.98);}
+.btn svg{width:15px;height:15px;}
+.btn-primary{background:linear-gradient(135deg,var(--c-primary-600),#2D7BF0);color:#fff;box-shadow:var(--shadow-sm);}
+.btn-primary:hover{box-shadow:var(--shadow-md);}
+.btn-ghost{background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border-subtle);}
+.btn-ghost:hover{background:var(--bg-surface-alt);color:var(--text-primary);}
+
+/* ---- KPI GRID ---- */
+.kpi-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(218px,1fr));
+  gap:16px;margin-bottom:26px;
+}
+.kpi-card{
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-md);padding:18px 18px 16px;
+  box-shadow:var(--shadow-sm);
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;
+  transition:box-shadow .2s, transform .2s;
+}
+.kpi-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.kpi-card-top{display:flex;align-items:center;justify-content:space-between;}
+.kpi-icon{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.kpi-icon svg{width:17px;height:17px;}
+.kpi-label{font-size:12px;color:var(--text-secondary);font-weight:600;}
+.kpi-value{font-family:var(--font-display);font-weight:800;font-size:25px;color:var(--text-primary);letter-spacing:-.3px;}
+.kpi-value .unit{font-size:14px;font-weight:600;color:var(--text-tertiary);margin-left:3px;}
+.kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:6px;width:fit-content;}
+.kpi-delta.up{color:var(--c-success);background:var(--c-success-bg);}
+.kpi-delta.down{color:var(--c-danger);background:var(--c-danger-bg);}
+.kpi-delta.neutral{color:var(--text-tertiary);background:var(--bg-surface-alt);}
+
+/* ---- PANELS / CARDS ---- */
+.panel{
+  background:var(--bg-surface);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-sm);
+}
+.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.panel-title{font-family:var(--font-display);font-weight:700;font-size:15.5px;color:var(--text-primary);}
+.panel-sub{font-size:12px;color:var(--text-tertiary);margin-top:2px;}
+.panel-link{font-size:12.5px;font-weight:600;color:var(--c-primary-600);cursor:pointer;}
+
+.grid-2col{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px;align-items:start;}
+.grid-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+@media (max-width:1100px){.grid-2col,.grid-3col{grid-template-columns:1fr;}}
+
+/* ---- LISTS ---- */
+.list-row{
+  display:flex;align-items:center;gap:12px;padding:10px 4px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.list-row:last-child{border-bottom:none;}
+.list-row-main{flex:1;min-width:0;}
+.list-row-title{font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.list-row-meta{font-size:11.5px;color:var(--text-tertiary);margin-top:1px;}
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap;
+}
+.badge-success{background:var(--c-success-bg);color:var(--c-success);}
+.badge-warning{background:var(--c-warning-bg);color:var(--c-warning);}
+.badge-danger{background:var(--c-danger-bg);color:var(--c-danger);}
+.badge-info{background:var(--c-info-bg);color:var(--c-info);}
+.badge-neutral{background:var(--bg-surface-alt);color:var(--text-secondary);border:1px solid var(--border-subtle);}
+
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.bar-label{font-size:12px;color:var(--text-secondary);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:8px;background:var(--bg-surface-alt);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--c-primary-600),var(--c-primary-500));}
+.bar-value{font-size:12px;font-weight:700;color:var(--text-primary);width:38px;text-align:right;flex-shrink:0;}
+
+/* ---- TABLE ---- */
+.table-wrap{overflow-x:auto;}
+table.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{
+  text-align:left;padding:10px 12px;font-size:11px;font-weight:700;
+  color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.4px;
+  border-bottom:1px solid var(--border-subtle);white-space:nowrap;
+}
+.data-table td{padding:11px 12px;border-bottom:1px solid var(--border-subtle);color:var(--text-primary);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr{cursor:pointer;transition:background .12s;}
+.data-table tbody tr:hover{background:var(--bg-surface-alt);}
+.row-person{display:flex;align-items:center;gap:10px;}
+.row-person-name{font-weight:600;font-size:13px;color:var(--text-primary);}
+.row-person-sub{font-size:11.5px;color:var(--text-tertiary);}
+
+/* ---- FILTER BAR ---- */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.filter-select{
+  padding:8px 12px;border-radius:8px;border:1px solid var(--border-subtle);
+  background:var(--bg-surface);color:var(--text-secondary);font-size:12.5px;font-weight:500;
+  cursor:pointer;font-family:inherit;
+}
+.filter-chip{
+  display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;
+  background:var(--c-primary-50);color:var(--c-primary-700);font-size:12px;font-weight:600;
+  border:1px solid var(--c-primary-100);cursor:pointer;
+}
+
+/* ============== ORGANOGRAMA ============== */
+.org-wrap{
+  overflow:auto;padding:30px 10px 10px;
+  background:
+    radial-gradient(circle at 1px 1px, var(--border-subtle) 1px, transparent 0);
+  background-size:22px 22px;
+  border-radius:var(--radius-lg);
+  min-height:560px;
+}
+.org-tree{display:flex;justify-content:center;}
+.org-node{display:flex;flex-direction:column;align-items:center;}
+.org-card{
+  background:var(--bg-surface);border:1.5px solid var(--border-subtle);
+  border-radius:12px;padding:12px 16px;min-width:188px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow-sm);cursor:pointer;
+  transition:box-shadow .15s, border-color .15s, transform .15s;
+  position:relative;z-index:2;
+}
+.org-card:hover{box-shadow:var(--shadow-md);border-color:var(--c-primary-500);transform:translateY(-2px);}
+.org-card.root{border-color:var(--c-primary-600);background:linear-gradient(135deg,var(--c-primary-50),var(--bg-surface));}
+.org-card-info{min-width:0;}
+.org-card-name{font-size:12.5px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+.org-card-role{font-size:11px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;}
+.org-card-count{
+  position:absolute;top:-8px;right:-8px;
+  background:var(--c-accent);color:#fff;font-size:10px;font-weight:700;
+  width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);
+}
+.org-children{display:flex;gap:28px;position:relative;padding-top:28px;margin-top:0;}
+.org-children::before{
+  content:'';position:absolute;top:0;left:50%;width:1.5px;height:28px;background:var(--border-strong);
+}
+.org-node-wrap{position:relative;padding-top:0;}
+.org-node-wrap::before{
+  content:'';position:absolute;top:-28px;left:50%;width:1.5px;height:28px;background:var(--border-strong);
+}
+.org-hline{position:absolute;top:0;height:1.5px;background:var(--border-strong);}
+.org-toggle{
+  width:18px;height:18px;border-radius:50%;background:var(--bg-surface);border:1.5px solid var(--border-strong);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text-secondary);
+  font-size:11px;font-weight:700;
+}
+
+/* ============== FICHA COLABORADOR (DRAWER) ============== */
+.drawer-overlay{
+  position:fixed;inset:0;background:rgba(8,16,28,0.45);backdrop-filter:blur(2px);
+  z-index:50;display:flex;justify-content:flex-end;
+  animation:fadeIn .15s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.drawer{
+  width:480px;max-width:92vw;height:100%;background:var(--bg-surface);
+  box-shadow:var(--shadow-lg);overflow-y:auto;
+  animation:slideIn .22s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+.drawer-head{
+  background:linear-gradient(135deg,var(--c-primary-800),var(--c-primary-900));
+  padding:26px 26px 60px;position:relative;color:#fff;
+}
+.drawer-close{
+  position:absolute;top:18px;right:18px;width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;
+}
+.drawer-close:hover{background:rgba(255,255,255,0.2);}
+.drawer-avatar-row{display:flex;align-items:center;gap:16px;}
+.drawer-avatar{width:64px;height:64px;border-radius:16px;font-size:22px;box-shadow:var(--shadow-md);border:2.5px solid rgba(255,255,255,0.5);}
+.drawer-name{font-family:var(--font-display);font-weight:800;font-size:19px;}
+.drawer-role{font-size:13px;color:var(--text-on-dark-dim);margin-top:2px;}
+.drawer-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.drawer-tag{background:rgba(255,255,255,0.14);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;}
+
+.drawer-body{padding:0 26px 30px;margin-top:-36px;}
+.drawer-section{
+  background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:14px;
+  padding:18px;margin-bottom:14px;box-shadow:var(--shadow-sm);
+}
+.drawer-section-title{
+  font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  color:var(--c-primary-600);margin-bottom:12px;display:flex;align-items:center;gap:6px;
+}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.field{min-width:0;}
+.field-label{font-size:10.5px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;}
+.field-value{font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;}
+.field.full{grid-column:1/-1;}
+
+.doc-chip{
+  display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;
+  background:var(--bg-surface-alt);border:1px solid var(--border-subtle);margin-bottom:7px;font-size:12.5px;font-weight:600;
+}
+.doc-chip svg{width:15px;height:15px;color:var(--c-primary-600);flex-shrink:0;}
+
+/* ---- TOOLTIP RECHARTS override ---- */
+.recharts-default-tooltip{
+  background:var(--bg-surface) !important;border:1px solid var(--border-subtle) !important;
+  border-radius:10px !important;box-shadow:var(--shadow-md) !important;font-family:var(--font-ui) !important;font-size:12px !important;
+}
+
+/* ---- responsive ---- */
+@media (max-width:880px){
+  .sidebar{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);}
+  .sidebar.mobile-open{transform:translateX(0);}
+  .topbar-title{display:none;}
+}
+
+.empty-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:50px 20px;color:var(--text-tertiary);text-align:center;
+}
+.empty-state svg{width:42px;height:42px;margin-bottom:12px;opacity:.5;}
+.empty-state-title{font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;}
+.empty-state-sub{font-size:12.5px;}
+
+.placeholder-panel{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:380px;color:var(--text-tertiary);text-align:center;gap:8px;
+}
+.placeholder-panel svg{width:48px;height:48px;opacity:.4;margin-bottom:6px;}
+.placeholder-panel-title{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--text-secondary);}
+
+.tooltip-wrap{position:relative;display:inline-flex;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// ============================================================
+// ÍCONES — linha simples (stroke), 24x24 viewBox, sem dependências externas
+// ============================================================
+const I = {};
+const mk = path => props => /*#__PURE__*/React.createElement("svg", {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: "1.8",
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  ...props
+}, path);
+I.Dashboard = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "3",
+  width: "7",
+  height: "9",
+  rx: "1.5"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "14",
+  y: "3",
+  width: "7",
+  height: "5",
+  rx: "1.5"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "14",
+  y: "12",
+  width: "7",
+  height: "9",
+  rx: "1.5"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "16",
+  width: "7",
+  height: "5",
+  rx: "1.5"
+})));
+I.Org = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "5",
+  r: "2.3"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "6",
+  cy: "18",
+  r: "2.3"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "18",
+  cy: "18",
+  r: "2.3"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M12 7.3V12M12 12L6 15.7M12 12l6 3.7"
+})));
+I.Users = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "9",
+  cy: "8",
+  r: "3.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "17.5",
+  cy: "8.5",
+  r: "2.6"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M16 14.2c2.6.5 4.5 2.6 4.5 5.3"
+})));
+I.Briefcase = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "2.5",
+  y: "7",
+  width: "19",
+  height: "13",
+  rx: "2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M8 7V5.5A2 2 0 0110 3.5h4A2 2 0 0116 5.5V7"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M2.5 12.5h19"
+})));
+I.Search = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "11",
+  cy: "11",
+  r: "7"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M21 21l-4.3-4.3"
+})));
+I.Calendar = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "5",
+  width: "18",
+  height: "16",
+  rx: "2.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M16 3v4M8 3v4M3 10h18"
+})));
+I.GraduationCap = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M2 8l10-4 10 4-10 4-10-4z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M6 10.5v4.5c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"
+})));
+I.Folder = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M3 6.5A2 2 0 015 4.5h4l2 2.5h8a2 2 0 012 2V18a2 2 0 01-2 2H5a2 2 0 01-2-2v-11.5z"
+})));
+I.Star = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.2-5.4 3.2 1.3-6L3.3 9.2l6.1-.6L12 3z"
+})));
+I.BarChart = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M4 20V10M11 20V4M18 20v-7"
+})));
+I.FileText = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M6 2.5h8l4 4V20a1.3 1.3 0 01-1.3 1.3H6A1.3 1.3 0 014.7 20V3.8A1.3 1.3 0 016 2.5z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M14 2.5V7h4.3M8 12h8M8 16h8"
+})));
+I.Settings = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "3.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M19.4 13.5a1.65 1.65 0 00.3-1.5 1.65 1.65 0 00-.3-1.5l1.4-1.6-1.6-2.7-2 .6a6.6 6.6 0 00-1.4-.8L15.4 3h-3l-.4 2a6.6 6.6 0 00-1.4.8l-2-.6-1.6 2.7 1.4 1.6a6.6 6.6 0 00-.3 1.5 6.6 6.6 0 00.3 1.5l-1.4 1.6 1.6 2.7 2-.6c.4.3.9.6 1.4.8l.4 2h3l.4-2c.5-.2 1-.5 1.4-.8l2 .6 1.6-2.7-1.4-1.6z"
+})));
+I.Bell = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 3a5.5 5.5 0 00-5.5 5.5v3.2c0 .8-.3 1.6-.9 2.2L4.5 15h15l-1.1-1.1a3.1 3.1 0 01-.9-2.2V8.5A5.5 5.5 0 0012 3z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M9.5 18.5a2.5 2.5 0 005 0"
+})));
+I.Sun = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "4.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8"
+})));
+I.Moon = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M20 14.5A8.5 8.5 0 119.5 4 6.8 6.8 0 0020 14.5z"
+})));
+I.ChevronLeft = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M15 5l-7 7 7 7"
+}));
+I.ChevronRight = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M9 5l7 7-7 7"
+}));
+I.ChevronDown = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M6 9l6 6 6-6"
+}));
+I.X = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M6 6l12 12M18 6L6 18"
+})));
+I.Mail = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "2.5",
+  y: "5",
+  width: "19",
+  height: "14",
+  rx: "2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M3.5 6.5l8.5 6.5 8.5-6.5"
+})));
+I.Phone = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M5.5 4.5h3l1.3 4.5-2 1.6a12 12 0 005.6 5.6l1.6-2 4.5 1.3v3a1.5 1.5 0 01-1.6 1.5C10.7 19.5 4.5 13.3 4 6.1A1.5 1.5 0 015.5 4.5z"
+}));
+I.MapPin = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 21s7-6.4 7-12a7 7 0 10-14 0c0 5.6 7 12 7 12z"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "9",
+  r: "2.4"
+})));
+I.Award = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "8.5",
+  r: "5.5"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M8.2 13l-1.6 7.5L12 18l5.4 2.5L15.8 13"
+})));
+I.AlertTriangle = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 3.5L21.5 19.5H2.5L12 3.5z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M12 9.5v4.2M12 16.8v.1"
+})));
+I.Clock = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "9"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M12 7v5l3.5 2"
+})));
+I.TrendingUp = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M3 17l6-6 4 4 8-8"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M15 5h6v6"
+})));
+I.TrendingDown = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M3 7l6 6 4-4 8 8"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M15 19h6v-6"
+})));
+I.DollarSign = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 2.5v19M16.5 6.8c0-1.8-2-3-4.5-3s-4.5 1.4-4.5 3.4c0 4.2 9 2.4 9 6.6 0 2-2 3.4-4.5 3.4s-4.5-1.2-4.5-3"
+})));
+I.UserPlus = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "9",
+  cy: "8",
+  r: "3.5"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M18.5 8v5M16 10.5h5"
+})));
+I.UserMinus = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "9",
+  cy: "8",
+  r: "3.5"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M16 10.5h5"
+})));
+I.Plane = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M10.5 3.5l1.5 5.5 6-2-1.5 4.5 4.5 2.5-6 .5-1.5 6-2-5.5-6 1 4-4.5-3-4.5 5.5 1z"
+}));
+I.PieChart = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 2.5v9.5h9.5A9.5 9.5 0 0012 2.5z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M21.2 15A9.5 9.5 0 1112 2.5"
+})));
+I.Activity = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M3 12h4l2.5-7L13 19l2.5-7H21"
+}));
+I.Layers = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 3l9 5-9 5-9-5 9-5z"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M3 13l9 5 9-5M3 17l9 5 9-5"
+})));
+I.Hash = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M5.5 9h13M5 15h13M9.5 4l-3 16M14.5 4l-3 16"
+}));
+I.Building = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "4",
+  y: "3",
+  width: "16",
+  height: "18",
+  rx: "1.5"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M9 8h.01M15 8h.01M9 12h.01M15 12h.01M9 16h.01M15 16h.01"
+})));
+I.ArrowUpRight = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M7 17L17 7"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M8 7h9v9"
+})));
+I.CheckCircle = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "9.5"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M8 12.5l2.5 2.5L16 9"
+})));
+I.Grid = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "3",
+  width: "7",
+  height: "7",
+  rx: "1.3"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "14",
+  y: "3",
+  width: "7",
+  height: "7",
+  rx: "1.3"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "3",
+  y: "14",
+  width: "7",
+  height: "7",
+  rx: "1.3"
+}), /*#__PURE__*/React.createElement("rect", {
+  x: "14",
+  y: "14",
+  width: "7",
+  height: "7",
+  rx: "1.3"
+})));
+I.Download = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("path", {
+  d: "M12 3v12m0 0l-4-4m4 4l4-4"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M4 18v2a1 1 0 001 1h14a1 1 0 001-1v-2"
+})));
+I.Filter = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M4 5h16l-6 7.5V19l-4 2v-8.5L4 5z"
+}));
+I.MoreVert = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "5",
+  r: "1.3"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "12",
+  r: "1.3"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "12",
+  cy: "19",
+  r: "1.3"
+})));
+I.Heart = mk(/*#__PURE__*/React.createElement("path", {
+  d: "M12 20s-7.5-4.6-9.8-9.4C.6 6.8 2.7 3.5 6.3 3.5c2 0 3.4 1 5.7 3.6 2.3-2.6 3.7-3.6 5.7-3.6 3.6 0 5.7 3.3 4.1 7.1C19.5 15.4 12 20 12 20z"
+}));
+I.IdCard = mk(/*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("rect", {
+  x: "2.5",
+  y: "5",
+  width: "19",
+  height: "14",
+  rx: "2"
+}), /*#__PURE__*/React.createElement("circle", {
+  cx: "8",
+  cy: "11",
+  r: "2"
+}), /*#__PURE__*/React.createElement("path", {
+  d: "M5.5 16c0-1.6 1.2-2.6 2.5-2.6s2.5 1 2.5 2.6M14 9.5h5M14 13h5"
+})));
+window.Icons = I;
+</script>
+<script>
+// ============================================================
+// DADOS MOCK — Sistema de Gestão Estratégica de RH (Shopping Center)
+// ============================================================
+
+const SHOPPINGS = ["Shopping Vitória Plaza", "Shopping Costa Norte", "Shopping Bela Vista"];
+const DEPARTAMENTOS = ["Diretoria", "RH", "Financeiro", "Jurídico", "Operações", "Marketing", "Segurança", "Manutenção", "Comercial", "TI"];
+const EMPRESAS = ["Plaza Empreendimentos S.A.", "Costa Norte Administradora Ltda."];
+const AVATAR_COLORS = ["#2563EB", "#7C3AED", "#0D9488", "#D97706", "#DC2626", "#0EA5E9", "#65A30D", "#9333EA"];
+function initials(name) {
+  return name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0]).join("").toUpperCase();
+}
+function avatarFor(name, seed) {
+  return {
+    initials: initials(name),
+    color: AVATAR_COLORS[seed % AVATAR_COLORS.length]
+  };
+}
+
+// Estrutura do organograma: id, nome, cargo, depto, shopping, gestorId
+const COLABORADORES = [{
+  id: 1,
+  nome: "Marcelo Andrade Souza",
+  matricula: "00001",
+  cargo: "Diretor Geral",
+  departamento: "Diretoria",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: null,
+  cpf: "123.456.789-00",
+  rg: "12.345.678-9",
+  centroCusto: "CC-001",
+  admissao: "2014-03-10",
+  tipoContrato: "CLT Indeterminado",
+  salario: 38500,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7890",
+  celular: "(11) 98765-4321",
+  email: "marcelo.andrade@plazaempreendimentos.com.br",
+  endereco: "Av. Paulista, 1500 - São Paulo, SP",
+  estadoCivil: "Casado",
+  escolaridade: "MBA em Gestão Empresarial",
+  cursos: ["MBA Gestão Estratégica - FGV", "Liderança de Alta Performance"],
+  status: "Ativo",
+  aniversario: "07-15"
+}, {
+  id: 2,
+  nome: "Renata Carvalho Lima",
+  matricula: "00002",
+  cargo: "Diretora de RH",
+  departamento: "RH",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 1,
+  cpf: "234.567.890-11",
+  rg: "23.456.789-0",
+  centroCusto: "CC-002",
+  admissao: "2015-06-01",
+  tipoContrato: "CLT Indeterminado",
+  salario: 22000,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7891",
+  celular: "(11) 98765-1111",
+  email: "renata.lima@plazaempreendimentos.com.br",
+  endereco: "Rua Augusta, 900 - São Paulo, SP",
+  estadoCivil: "Solteira",
+  escolaridade: "Pós-graduação em Gestão de Pessoas",
+  cursos: ["Pós em Psicologia Organizacional", "Certificação SHRM-CP"],
+  status: "Ativo",
+  aniversario: "06-25"
+}, {
+  id: 3,
+  nome: "Fábio Henrique Martins",
+  matricula: "00003",
+  cargo: "Diretor Financeiro",
+  departamento: "Financeiro",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 1,
+  cpf: "345.678.901-22",
+  rg: "34.567.890-1",
+  centroCusto: "CC-003",
+  admissao: "2016-02-15",
+  tipoContrato: "CLT Indeterminado",
+  salario: 25000,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7892",
+  celular: "(11) 98765-2222",
+  email: "fabio.martins@plazaempreendimentos.com.br",
+  endereco: "Alameda Santos, 200 - São Paulo, SP",
+  estadoCivil: "Casado",
+  escolaridade: "Ciências Contábeis",
+  cursos: ["CFO Executive Program"],
+  status: "Ativo",
+  aniversario: "11-02"
+}, {
+  id: 4,
+  nome: "Camila Rodrigues Pires",
+  matricula: "00004",
+  cargo: "Gerente de Operações",
+  departamento: "Operações",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 1,
+  cpf: "456.789.012-33",
+  rg: "45.678.901-2",
+  centroCusto: "CC-004",
+  admissao: "2017-08-20",
+  tipoContrato: "CLT Indeterminado",
+  salario: 14500,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "09:00 - 19:00",
+  telefone: "(11) 3456-7893",
+  celular: "(11) 98765-3333",
+  email: "camila.pires@plazaempreendimentos.com.br",
+  endereco: "Rua Oscar Freire, 88 - São Paulo, SP",
+  estadoCivil: "Divorciada",
+  escolaridade: "Administração de Empresas",
+  cursos: ["Gestão de Facilities"],
+  status: "Ativo",
+  aniversario: "03-30"
+}, {
+  id: 5,
+  nome: "Juliana Pereira Santos",
+  matricula: "00005",
+  cargo: "Analista de RH Sênior",
+  departamento: "RH",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 2,
+  cpf: "567.890.123-44",
+  rg: "56.789.012-3",
+  centroCusto: "CC-002",
+  admissao: "2019-01-10",
+  tipoContrato: "CLT Indeterminado",
+  salario: 7200,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7894",
+  celular: "(11) 98765-4444",
+  email: "juliana.santos@plazaempreendimentos.com.br",
+  endereco: "Rua Haddock Lobo, 300 - São Paulo, SP",
+  estadoCivil: "Solteira",
+  escolaridade: "Psicologia",
+  cursos: ["Recrutamento e Seleção Avançado", "DHO na Prática"],
+  status: "Ativo",
+  aniversario: "09-12"
+}, {
+  id: 6,
+  nome: "Bruno Costa Oliveira",
+  matricula: "00006",
+  cargo: "Analista de RH Pleno",
+  departamento: "RH",
+  shopping: "Shopping Costa Norte",
+  empresa: EMPRESAS[1],
+  gestorId: 2,
+  cpf: "678.901.234-55",
+  rg: "67.890.123-4",
+  centroCusto: "CC-012",
+  admissao: "2020-05-18",
+  tipoContrato: "CLT Indeterminado",
+  salario: 5400,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(21) 3456-7895",
+  celular: "(21) 98765-5555",
+  email: "bruno.oliveira@costanorte.com.br",
+  endereco: "Av. Atlântica, 1200 - Rio de Janeiro, RJ",
+  estadoCivil: "Casado",
+  escolaridade: "Gestão de RH",
+  cursos: ["Folha de Pagamento Avançado"],
+  status: "Ativo",
+  aniversario: "01-05"
+}, {
+  id: 7,
+  nome: "Patrícia Gomes Almeida",
+  matricula: "00007",
+  cargo: "Analista Financeiro Sênior",
+  departamento: "Financeiro",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 3,
+  cpf: "789.012.345-66",
+  rg: "78.901.234-5",
+  centroCusto: "CC-003",
+  admissao: "2018-11-05",
+  tipoContrato: "CLT Indeterminado",
+  salario: 8900,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7896",
+  celular: "(11) 98765-6666",
+  email: "patricia.almeida@plazaempreendimentos.com.br",
+  endereco: "Rua Pamplona, 500 - São Paulo, SP",
+  estadoCivil: "Casada",
+  escolaridade: "Ciências Contábeis",
+  cursos: [],
+  status: "Ativo",
+  aniversario: "06-22"
+}, {
+  id: 8,
+  nome: "Diego Fernandes Rocha",
+  matricula: "00008",
+  cargo: "Coordenador Jurídico",
+  departamento: "Jurídico",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 1,
+  cpf: "890.123.456-77",
+  rg: "89.012.345-6",
+  centroCusto: "CC-005",
+  admissao: "2016-09-01",
+  tipoContrato: "CLT Indeterminado",
+  salario: 16800,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "09:00 - 19:00",
+  telefone: "(11) 3456-7897",
+  celular: "(11) 98765-7777",
+  email: "diego.rocha@plazaempreendimentos.com.br",
+  endereco: "Rua Bela Cintra, 700 - São Paulo, SP",
+  estadoCivil: "Solteiro",
+  escolaridade: "Direito",
+  cursos: ["Direito Imobiliário e Locações"],
+  status: "Ativo",
+  aniversario: "12-18"
+}, {
+  id: 9,
+  nome: "Larissa Tavares Nunes",
+  matricula: "00009",
+  cargo: "Coordenadora de Marketing",
+  departamento: "Marketing",
+  shopping: "Shopping Costa Norte",
+  empresa: EMPRESAS[1],
+  gestorId: 1,
+  cpf: "901.234.567-88",
+  rg: "90.123.456-7",
+  centroCusto: "CC-006",
+  admissao: "2019-04-22",
+  tipoContrato: "CLT Indeterminado",
+  salario: 12500,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "09:00 - 19:00",
+  telefone: "(21) 3456-7898",
+  celular: "(21) 98765-8888",
+  email: "larissa.nunes@costanorte.com.br",
+  endereco: "Av. Vieira Souto, 400 - Rio de Janeiro, RJ",
+  estadoCivil: "Casada",
+  escolaridade: "Publicidade e Propaganda",
+  cursos: ["Marketing Digital para Varejo"],
+  status: "Ativo",
+  aniversario: "08-09"
+}, {
+  id: 10,
+  nome: "Eduardo Lima Barros",
+  matricula: "00010",
+  cargo: "Supervisor de Segurança",
+  departamento: "Segurança",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 4,
+  cpf: "012.345.678-99",
+  rg: "01.234.567-8",
+  centroCusto: "CC-007",
+  admissao: "2017-03-12",
+  tipoContrato: "CLT Indeterminado",
+  salario: 6200,
+  cargaHoraria: "44h semanais",
+  escala: "12x36",
+  horario: "06:00 - 18:00",
+  telefone: "(11) 3456-7899",
+  celular: "(11) 98765-9999",
+  email: "eduardo.barros@plazaempreendimentos.com.br",
+  endereco: "Rua Vergueiro, 1000 - São Paulo, SP",
+  estadoCivil: "Casado",
+  escolaridade: "Ensino Médio Completo",
+  cursos: ["NR-23 Brigada de Incêndio", "Gestão de Equipes de Segurança"],
+  status: "Ativo",
+  aniversario: "04-14"
+}, {
+  id: 11,
+  nome: "Vanessa Souza Ribeiro",
+  matricula: "00011",
+  cargo: "Supervisora de Manutenção",
+  departamento: "Manutenção",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 4,
+  cpf: "111.222.333-01",
+  rg: "11.222.333-4",
+  centroCusto: "CC-008",
+  admissao: "2018-07-30",
+  tipoContrato: "CLT Indeterminado",
+  salario: 6800,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "07:00 - 17:00",
+  telefone: "(11) 3456-7800",
+  celular: "(11) 98765-0000",
+  email: "vanessa.ribeiro@plazaempreendimentos.com.br",
+  endereco: "Rua Cardeal Arcoverde, 850 - São Paulo, SP",
+  estadoCivil: "Solteira",
+  escolaridade: "Engenharia Civil",
+  cursos: ["NR-10", "Gestão de Manutenção Predial"],
+  status: "Ativo",
+  aniversario: "10-27"
+}, {
+  id: 12,
+  nome: "Rodrigo Almeida Castro",
+  matricula: "00012",
+  cargo: "Analista de Recrutamento",
+  departamento: "RH",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 5,
+  cpf: "222.333.444-12",
+  rg: "22.333.444-5",
+  centroCusto: "CC-002",
+  admissao: "2021-02-08",
+  tipoContrato: "CLT Indeterminado",
+  salario: 4800,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(11) 3456-7801",
+  celular: "(11) 98765-1212",
+  email: "rodrigo.castro@plazaempreendimentos.com.br",
+  endereco: "Rua Teodoro Sampaio, 600 - São Paulo, SP",
+  estadoCivil: "Solteiro",
+  escolaridade: "Gestão de RH",
+  cursos: ["Recrutamento por Competências"],
+  status: "Ativo",
+  aniversario: "02-19"
+}, {
+  id: 13,
+  nome: "Beatriz Nogueira Ferreira",
+  matricula: "00013",
+  cargo: "Estagiária de RH",
+  departamento: "RH",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 5,
+  cpf: "333.444.555-23",
+  rg: "33.444.555-6",
+  centroCusto: "CC-002",
+  admissao: "2025-09-01",
+  tipoContrato: "Estágio",
+  salario: 1800,
+  cargaHoraria: "30h semanais",
+  escala: "5x2",
+  horario: "13:00 - 19:00",
+  telefone: "(11) 3456-7802",
+  celular: "(11) 98765-1313",
+  email: "beatriz.ferreira@plazaempreendimentos.com.br",
+  endereco: "Rua Fradique Coutinho, 222 - São Paulo, SP",
+  estadoCivil: "Solteira",
+  escolaridade: "Cursando Administração",
+  cursos: [],
+  status: "Experiência",
+  aniversario: "07-03",
+  fimExperiencia: "2026-07-01"
+}, {
+  id: 14,
+  nome: "Thiago Souza Mendes",
+  matricula: "00014",
+  cargo: "Analista Jurídico",
+  departamento: "Jurídico",
+  shopping: "Shopping Vitória Plaza",
+  empresa: EMPRESAS[0],
+  gestorId: 8,
+  cpf: "444.555.666-34",
+  rg: "44.555.666-7",
+  centroCusto: "CC-005",
+  admissao: "2022-10-15",
+  tipoContrato: "CLT Indeterminado",
+  salario: 7800,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "09:00 - 19:00",
+  telefone: "(11) 3456-7803",
+  celular: "(11) 98765-1414",
+  email: "thiago.mendes@plazaempreendimentos.com.br",
+  endereco: "Rua dos Pinheiros, 450 - São Paulo, SP",
+  estadoCivil: "Casado",
+  escolaridade: "Direito",
+  cursos: ["Contratos Comerciais"],
+  status: "Ativo",
+  aniversario: "05-21"
+}, {
+  id: 15,
+  nome: "Carla Daniela Souza",
+  matricula: "00015",
+  cargo: "Assistente Financeiro",
+  departamento: "Financeiro",
+  shopping: "Shopping Costa Norte",
+  empresa: EMPRESAS[1],
+  gestorId: 7,
+  cpf: "555.666.777-45",
+  rg: "55.666.777-8",
+  centroCusto: "CC-012",
+  admissao: "2026-04-01",
+  tipoContrato: "CLT Experiência",
+  salario: 3600,
+  cargaHoraria: "44h semanais",
+  escala: "5x2",
+  horario: "08:00 - 18:00",
+  telefone: "(21) 3456-7804",
+  celular: "(21) 98765-1515",
+  email: "carla.souza@costanorte.com.br",
+  endereco: "Rua Voluntários da Pátria, 300 - Rio de Janeiro, RJ",
+  estadoCivil: "Solteira",
+  escolaridade: "Ciências Contábeis (cursando)",
+  cursos: [],
+  status: "Experiência",
+  aniversario: "06-30",
+  fimExperiencia: "2026-07-10"
+}];
+
+// Construir hierarquia em árvore a partir do gestorId
+function buildOrgTree(list) {
+  const map = {};
+  list.forEach(p => map[p.id] = {
+    ...p,
+    filhos: []
+  });
+  let root = null;
+  list.forEach(p => {
+    if (p.gestorId === null) root = map[p.id];else if (map[p.gestorId]) map[p.gestorId].filhos.push(map[p.id]);
+  });
+  return root;
+}
+const ORG_TREE = buildOrgTree(COLABORADORES);
+
+// KPIs do Dashboard Executivo
+const KPIS = {
+  totalColaboradores: 312,
+  headcountEmpresa: [{
+    nome: "Plaza Empreendimentos S.A.",
+    valor: 198
+  }, {
+    nome: "Costa Norte Administradora Ltda.",
+    valor: 114
+  }],
+  headcountShopping: [{
+    nome: "Shopping Vitória Plaza",
+    valor: 142
+  }, {
+    nome: "Shopping Costa Norte",
+    valor: 98
+  }, {
+    nome: "Shopping Bela Vista",
+    valor: 72
+  }],
+  headcountDepartamento: [{
+    nome: "Operações",
+    valor: 68
+  }, {
+    nome: "Segurança",
+    valor: 54
+  }, {
+    nome: "Manutenção",
+    valor: 47
+  }, {
+    nome: "Comercial",
+    valor: 38
+  }, {
+    nome: "RH",
+    valor: 22
+  }, {
+    nome: "Financeiro",
+    valor: 19
+  }, {
+    nome: "Marketing",
+    valor: 17
+  }, {
+    nome: "Jurídico",
+    valor: 11
+  }, {
+    nome: "TI",
+    valor: 14
+  }, {
+    nome: "Diretoria",
+    valor: 5
+  }],
+  vagasAbertas: 14,
+  admissoesMes: 9,
+  desligamentosMes: 5,
+  emFerias: 11,
+  aniversariantesMes: 16,
+  contratosExperienciaVencendo: 4,
+  treinamentosPendentes: 23,
+  horasExtrasMes: 412,
+  bancoDeHoras: 187,
+  tempoMedioContratacao: 28,
+  turnoverMensal: 1.8,
+  turnoverAcumulado12m: 14.2,
+  absenteismo: 2.4,
+  custoFolhaTotal: 1842500,
+  custoPorShopping: [{
+    nome: "Shopping Vitória Plaza",
+    valor: 842000
+  }, {
+    nome: "Shopping Costa Norte",
+    valor: 612500
+  }, {
+    nome: "Shopping Bela Vista",
+    valor: 388000
+  }],
+  custoPorDepartamento: [{
+    nome: "Operações",
+    valor: 412000
+  }, {
+    nome: "Diretoria",
+    valor: 286000
+  }, {
+    nome: "Segurança",
+    valor: 198000
+  }, {
+    nome: "Financeiro",
+    valor: 176000
+  }, {
+    nome: "RH",
+    valor: 154000
+  }, {
+    nome: "Manutenção",
+    valor: 142000
+  }, {
+    nome: "Marketing",
+    valor: 138000
+  }, {
+    nome: "Comercial",
+    valor: 132000
+  }, {
+    nome: "Jurídico",
+    valor: 118000
+  }, {
+    nome: "TI",
+    valor: 86500
+  }],
+  evolucaoQuadro: [{
+    mes: "Jan",
+    valor: 289
+  }, {
+    mes: "Fev",
+    valor: 292
+  }, {
+    mes: "Mar",
+    valor: 295
+  }, {
+    mes: "Abr",
+    valor: 298
+  }, {
+    mes: "Mai",
+    valor: 301
+  }, {
+    mes: "Jun",
+    valor: 304
+  }, {
+    mes: "Jul",
+    valor: 300
+  }, {
+    mes: "Ago",
+    valor: 303
+  }, {
+    mes: "Set",
+    valor: 306
+  }, {
+    mes: "Out",
+    valor: 308
+  }, {
+    mes: "Nov",
+    valor: 309
+  }, {
+    mes: "Dez",
+    valor: 312
+  }]
+};
+const VAGAS = [{
+  id: 1,
+  cargo: "Analista de Marketing Digital",
+  depto: "Marketing",
+  shopping: "Shopping Vitória Plaza",
+  status: "Entrevista RH",
+  diasAberto: 12,
+  gestor: "Larissa Tavares Nunes",
+  prioridade: "Alta"
+}, {
+  id: 2,
+  cargo: "Técnico de Manutenção Elétrica",
+  depto: "Manutenção",
+  shopping: "Shopping Costa Norte",
+  status: "Triagem",
+  diasAberto: 34,
+  gestor: "Vanessa Souza Ribeiro",
+  prioridade: "Urgente"
+}, {
+  id: 3,
+  cargo: "Assistente Jurídico",
+  depto: "Jurídico",
+  shopping: "Shopping Vitória Plaza",
+  status: "Aberta",
+  diasAberto: 3,
+  gestor: "Diego Fernandes Rocha",
+  prioridade: "Média"
+}, {
+  id: 4,
+  cargo: "Agente de Segurança",
+  depto: "Segurança",
+  shopping: "Shopping Bela Vista",
+  status: "Entrevista Gestor",
+  diasAberto: 19,
+  gestor: "Eduardo Lima Barros",
+  prioridade: "Alta"
+}, {
+  id: 5,
+  cargo: "Analista Financeiro Júnior",
+  depto: "Financeiro",
+  shopping: "Shopping Costa Norte",
+  status: "Aprovado",
+  diasAberto: 41,
+  gestor: "Patrícia Gomes Almeida",
+  prioridade: "Alta"
+}];
+const ANIVERSARIANTES_MES = COLABORADORES.filter(c => c.aniversario && c.aniversario.startsWith("06"));
+</script>
+<script>
+// ============================================================
+// RH LITORAL — Aplicação principal (protótipo de demonstração)
+// ============================================================
+const {
+  useState,
+  useMemo,
+  useEffect,
+  useRef
+} = React;
+const Icons = window.Icons;
+
+// ---------- Helpers ----------
+function formatBRL(v) {
+  return v.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0
+  });
+}
+function formatNum(v) {
+  return v.toLocaleString("pt-BR");
+}
+const NAV_ITEMS = [{
+  id: "dashboard",
+  label: "Dashboard",
+  icon: Icons.Dashboard
+}, {
+  id: "organograma",
+  label: "Organograma",
+  icon: Icons.Org
+}, {
+  id: "colaboradores",
+  label: "Colaboradores",
+  icon: Icons.Users
+}, {
+  id: "vagas",
+  label: "Vagas",
+  icon: Icons.Briefcase
+}, {
+  id: "recrutamento",
+  label: "Recrutamento e Seleção",
+  icon: Icons.UserPlus
+}, {
+  id: "ferias",
+  label: "Férias",
+  icon: Icons.Plane
+}, {
+  id: "treinamentos",
+  label: "Treinamentos",
+  icon: Icons.GraduationCap
+}, {
+  id: "documentos",
+  label: "Documentos",
+  icon: Icons.Folder
+}, {
+  id: "avaliacoes",
+  label: "Avaliações",
+  icon: Icons.Star
+}, {
+  id: "indicadores",
+  label: "Indicadores",
+  icon: Icons.BarChart
+}, {
+  id: "relatorios",
+  label: "Relatórios",
+  icon: Icons.FileText
+}, {
+  id: "configuracoes",
+  label: "Configurações",
+  icon: Icons.Settings
+}];
+const PAGE_META = {
+  dashboard: {
+    eyebrow: "Visão executiva",
+    title: "Dashboard",
+    sub: "Panorama em tempo real de pessoas, custos e indicadores estratégicos."
+  },
+  organograma: {
+    eyebrow: "Estrutura organizacional",
+    title: "Organograma",
+    sub: "Hierarquia atualizada automaticamente a partir do cadastro de colaboradores."
+  },
+  colaboradores: {
+    eyebrow: "Gestão de pessoas",
+    title: "Colaboradores",
+    sub: "Base completa de colaboradores ativos, em experiência e desligados."
+  },
+  vagas: {
+    eyebrow: "Recrutamento",
+    title: "Controle de Vagas",
+    sub: "Acompanhamento do funil de vagas abertas por unidade e departamento."
+  },
+  recrutamento: {
+    eyebrow: "Recrutamento",
+    title: "Recrutamento e Seleção",
+    sub: "Funil de candidatos e etapas do processo seletivo."
+  },
+  ferias: {
+    eyebrow: "Gestão de pessoas",
+    title: "Férias",
+    sub: "Cronograma, saldos e alertas de férias vencidas."
+  },
+  treinamentos: {
+    eyebrow: "Desenvolvimento",
+    title: "Treinamentos",
+    sub: "Cursos obrigatórios, vencidos, futuros e certificados."
+  },
+  documentos: {
+    eyebrow: "Gestão documental",
+    title: "Documentos",
+    sub: "Repositório digital de documentos por colaborador."
+  },
+  avaliacoes: {
+    eyebrow: "Desempenho",
+    title: "Avaliações",
+    sub: "Ciclos de avaliação de desempenho e metas."
+  },
+  indicadores: {
+    eyebrow: "Inteligência de RH",
+    title: "Indicadores",
+    sub: "Métricas estratégicas de pessoas e custos."
+  },
+  relatorios: {
+    eyebrow: "Exportação",
+    title: "Relatórios",
+    sub: "Gere relatórios em Excel, PDF ou CSV."
+  },
+  configuracoes: {
+    eyebrow: "Sistema",
+    title: "Configurações",
+    sub: "Preferências, permissões e estrutura organizacional."
+  }
+};
+
+// ---------- Avatar ----------
+function Avatar({
+  name,
+  size = 38,
+  seed = 0,
+  fontSize
+}) {
+  const a = avatarFor(name, seed + name.length);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "avatar",
+    style: {
+      width: size,
+      height: size,
+      background: a.color,
+      fontSize: fontSize || size * 0.36
+    }
+  }, a.initials);
+}
+
+// ---------- Sidebar ----------
+function Sidebar({
+  page,
+  setPage,
+  collapsed,
+  setCollapsed
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "sidebar" + (collapsed ? " collapsed" : "")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-brand"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-brand-mark"
+  }, "RL"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-brand-text"
+  }, "RH Litoral"), /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-brand-sub"
+  }, "Gestão Estratégica"))), /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-nav"
+  }, NAV_ITEMS.map(item => /*#__PURE__*/React.createElement("div", {
+    key: item.id,
+    className: "nav-item" + (page === item.id ? " active" : ""),
+    onClick: () => setPage(item.id),
+    title: collapsed ? item.label : undefined
+  }, /*#__PURE__*/React.createElement(item.icon, null), /*#__PURE__*/React.createElement("span", {
+    className: "nav-item-label"
+  }, item.label)))), /*#__PURE__*/React.createElement("div", {
+    className: "sidebar-collapse-btn",
+    onClick: () => setCollapsed(!collapsed)
+  }, collapsed ? /*#__PURE__*/React.createElement(Icons.ChevronRight, null) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icons.ChevronLeft, null), /*#__PURE__*/React.createElement("span", null, "Recolher menu"))));
+}
+
+// ---------- Topbar ----------
+function Topbar({
+  pageMeta,
+  theme,
+  setTheme,
+  onSearch,
+  searchResults,
+  onSelectPerson
+}) {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  function handleChange(e) {
+    const v = e.target.value;
+    setQuery(v);
+    onSearch(v);
+    setSearchOpen(v.length > 0);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "topbar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "topbar-title"
+  }, pageMeta.title), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-search",
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement(Icons.Search, null), /*#__PURE__*/React.createElement("input", {
+    placeholder: "Buscar por nome, cargo, matrícula, CPF, departamento ou shopping...",
+    value: query,
+    onChange: handleChange,
+    onFocus: () => query && setSearchOpen(true),
+    onBlur: () => setTimeout(() => setSearchOpen(false), 150)
+  }), searchOpen && searchResults.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: "calc(100% + 8px)",
+      left: 0,
+      right: 0,
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border-subtle)",
+      borderRadius: 12,
+      boxShadow: "var(--shadow-lg)",
+      zIndex: 100,
+      maxHeight: 360,
+      overflowY: "auto",
+      padding: 6
+    }
+  }, searchResults.slice(0, 7).map(p => /*#__PURE__*/React.createElement("div", {
+    key: p.id,
+    className: "list-row",
+    style: {
+      cursor: "pointer",
+      padding: "9px 10px",
+      borderRadius: 8
+    },
+    onMouseDown: () => {
+      onSelectPerson(p);
+      setSearchOpen(false);
+      setQuery("");
+    }
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: p.nome,
+    size: 32,
+    seed: p.id
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "list-row-main"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "list-row-title"
+  }, p.nome), /*#__PURE__*/React.createElement("div", {
+    className: "list-row-meta"
+  }, p.cargo, " · ", p.matricula, " · ", p.shopping))))), searchOpen && query && searchResults.length === 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: "absolute",
+      top: "calc(100% + 8px)",
+      left: 0,
+      right: 0,
+      background: "var(--bg-surface)",
+      border: "1px solid var(--border-subtle)",
+      borderRadius: 12,
+      boxShadow: "var(--shadow-lg)",
+      zIndex: 100,
+      padding: 16,
+      fontSize: 12.5,
+      color: "var(--text-tertiary)"
+    }
+  }, "Nenhum colaborador encontrado para \"", query, "\".")), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-spacer"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-actions"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "icon-btn",
+    onClick: () => setTheme(theme === "light" ? "dark" : "light"),
+    title: "Alternar tema"
+  }, theme === "light" ? /*#__PURE__*/React.createElement(Icons.Moon, null) : /*#__PURE__*/React.createElement(Icons.Sun, null)), /*#__PURE__*/React.createElement("div", {
+    className: "icon-btn",
+    title: "Notificações"
+  }, /*#__PURE__*/React.createElement(Icons.Bell, null), /*#__PURE__*/React.createElement("span", {
+    className: "dot"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-user"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: "Renata Carvalho Lima",
+    size: 36,
+    seed: 2
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "topbar-user-name"
+  }, "Renata Lima"), /*#__PURE__*/React.createElement("div", {
+    className: "topbar-user-role"
+  }, "Diretora de RH")), /*#__PURE__*/React.createElement(Icons.ChevronDown, {
+    style: {
+      width: 14,
+      height: 14,
+      color: "var(--text-tertiary)"
+    }
+  }))));
+}
+
+// ============================================================
+// KPI CARD
+// ============================================================
+function KpiCard({
+  icon,
+  label,
+  value,
+  unit,
+  delta,
+  deltaType,
+  color
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-card-top"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-icon",
+    style: {
+      background: `${color}1A`,
+      color: color
+    }
+  }, icon), delta && /*#__PURE__*/React.createElement("div", {
+    className: `kpi-delta ${deltaType}`
+  }, deltaType === "up" ? /*#__PURE__*/React.createElement(Icons.TrendingUp, {
+    style: {
+      width: 11,
+      height: 11
+    }
+  }) : deltaType === "down" ? /*#__PURE__*/React.createElement(Icons.TrendingDown, {
+    style: {
+      width: 11,
+      height: 11
+    }
+  }) : null, delta)), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-label"
+  }, label), /*#__PURE__*/React.createElement("div", {
+    className: "kpi-value"
+  }, value, unit && /*#__PURE__*/React.createElement("span", {
+    className: "unit"
+  }, unit)));
+}
+function BarList({
+  data,
+  max,
+  colorVar
+}) {
+  const m = max || Math.max(...data.map(d => d.valor));
+  return /*#__PURE__*/React.createElement("div", null, data.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    className: "bar-row",
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-label",
+    title: d.nome
+  }, d.nome), /*#__PURE__*/React.createElement("div", {
+    className: "bar-track"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bar-fill",
+    style: {
+      width: `${d.valor / m * 100}%`
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "bar-value"
+  }, formatNum(d.valor)))));
+}
+
+// ============================================================
+// GRÁFICOS SVG NATIVOS (sem dependência de bibliotecas externas)
+// ============================================================
+function SimpleAreaChart({
+  data,
+  width = 600,
+  height = 260,
+  color = "#2563EB",
+  min,
+  max
+}) {
+  const padding = {
+    top: 16,
+    right: 16,
+    bottom: 28,
+    left: 36
+  };
+  const innerW = width - padding.left - padding.right;
+  const innerH = height - padding.top - padding.bottom;
+  const values = data.map(d => d.valor);
+  const vMin = min !== undefined ? min : Math.min(...values);
+  const vMax = max !== undefined ? max : Math.max(...values);
+  const range = vMax - vMin || 1;
+  const points = data.map((d, i) => {
+    const x = padding.left + i / (data.length - 1) * innerW;
+    const y = padding.top + innerH - (d.valor - vMin) / range * innerH;
+    return [x, y];
+  });
+  const linePath = points.map((p, i) => i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`).join(" ");
+  const areaPath = `${linePath} L${points[points.length - 1][0]},${padding.top + innerH} L${points[0][0]},${padding.top + innerH} Z`;
+  const [hoverIdx, setHoverIdx] = useState(null);
+  const gridLines = 4;
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: `0 0 ${width} ${height}`,
+    width: "100%",
+    height: height,
+    style: {
+      overflow: "visible"
+    },
+    onMouseLeave: () => setHoverIdx(null)
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "gradAreaChart",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: color,
+    stopOpacity: 0.32
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: color,
+    stopOpacity: 0
+  }))), Array.from({
+    length: gridLines + 1
+  }).map((_, i) => {
+    const y = padding.top + innerH / gridLines * i;
+    return /*#__PURE__*/React.createElement("line", {
+      key: i,
+      x1: padding.left,
+      x2: width - padding.right,
+      y1: y,
+      y2: y,
+      stroke: "var(--border-subtle)",
+      strokeWidth: "1"
+    });
+  }), /*#__PURE__*/React.createElement("path", {
+    d: areaPath,
+    fill: "url(#gradAreaChart)"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: linePath,
+    fill: "none",
+    stroke: color,
+    strokeWidth: "2.5",
+    strokeLinejoin: "round",
+    strokeLinecap: "round"
+  }), points.map((p, i) => /*#__PURE__*/React.createElement("g", {
+    key: i
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: p[0] - innerW / data.length / 2,
+    y: padding.top,
+    width: innerW / data.length,
+    height: innerH,
+    fill: "transparent",
+    onMouseEnter: () => setHoverIdx(i),
+    style: {
+      cursor: "pointer"
+    }
+  }), hoverIdx === i && /*#__PURE__*/React.createElement("circle", {
+    cx: p[0],
+    cy: p[1],
+    r: "4",
+    fill: color,
+    stroke: "var(--bg-surface)",
+    strokeWidth: "2"
+  }))), data.map((d, i) => /*#__PURE__*/React.createElement("text", {
+    key: i,
+    x: points[i][0],
+    y: height - 6,
+    textAnchor: "middle",
+    fontSize: "11",
+    fill: "var(--text-tertiary)"
+  }, d.mes)), hoverIdx !== null && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+    x1: points[hoverIdx][0],
+    x2: points[hoverIdx][0],
+    y1: padding.top,
+    y2: padding.top + innerH,
+    stroke: color,
+    strokeWidth: "1",
+    strokeDasharray: "3 3",
+    opacity: "0.5"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: Math.min(Math.max(points[hoverIdx][0] - 28, 0), width - 56),
+    y: points[hoverIdx][1] - 28,
+    width: "56",
+    height: "22",
+    rx: "6",
+    fill: "var(--bg-surface)",
+    stroke: "var(--border-subtle)"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: Math.min(Math.max(points[hoverIdx][0], 28), width - 28),
+    y: points[hoverIdx][1] - 13,
+    textAnchor: "middle",
+    fontSize: "11",
+    fontWeight: "700",
+    fill: "var(--text-primary)"
+  }, data[hoverIdx].valor)));
+}
+function SimpleDonutChart({
+  data,
+  colors,
+  size = 200,
+  innerRatio = 0.62
+}) {
+  const total = data.reduce((s, d) => s + d.valor, 0);
+  const radius = size / 2;
+  const innerR = radius * innerRatio;
+  let cumulativeAngle = -90;
+  const [hoverIdx, setHoverIdx] = useState(null);
+  function arcPath(startAngle, endAngle, r, ir) {
+    const toRad = a => a * Math.PI / 180;
+    const x1 = radius + r * Math.cos(toRad(startAngle));
+    const y1 = radius + r * Math.sin(toRad(startAngle));
+    const x2 = radius + r * Math.cos(toRad(endAngle));
+    const y2 = radius + r * Math.sin(toRad(endAngle));
+    const x3 = radius + ir * Math.cos(toRad(endAngle));
+    const y3 = radius + ir * Math.sin(toRad(endAngle));
+    const x4 = radius + ir * Math.cos(toRad(startAngle));
+    const y4 = radius + ir * Math.sin(toRad(startAngle));
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+    return `M${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} L${x3},${y3} A${ir},${ir} 0 ${largeArc} 0 ${x4},${y4} Z`;
+  }
+  const slices = data.map((d, i) => {
+    const angle = d.valor / total * 360;
+    const startAngle = cumulativeAngle;
+    const endAngle = cumulativeAngle + angle - 2;
+    cumulativeAngle += angle;
+    return {
+      ...d,
+      startAngle,
+      endAngle,
+      color: colors[i % colors.length]
+    };
+  });
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: `0 0 ${size} ${size}`,
+    width: "100%",
+    height: size,
+    style: {
+      maxWidth: size * 1.3,
+      display: "block",
+      margin: "0 auto"
+    }
+  }, slices.map((s, i) => /*#__PURE__*/React.createElement("path", {
+    key: i,
+    d: arcPath(s.startAngle, s.endAngle, radius - 2, innerR),
+    fill: s.color,
+    opacity: hoverIdx === null || hoverIdx === i ? 1 : 0.45,
+    onMouseEnter: () => setHoverIdx(i),
+    onMouseLeave: () => setHoverIdx(null),
+    style: {
+      cursor: "pointer",
+      transition: "opacity .15s"
+    }
+  })), /*#__PURE__*/React.createElement("text", {
+    x: radius,
+    y: radius - 4,
+    textAnchor: "middle",
+    fontSize: "20",
+    fontWeight: "800",
+    fill: "var(--text-primary)"
+  }, hoverIdx !== null ? slices[hoverIdx].valor : total), /*#__PURE__*/React.createElement("text", {
+    x: radius,
+    y: radius + 14,
+    textAnchor: "middle",
+    fontSize: "10.5",
+    fill: "var(--text-tertiary)"
+  }, hoverIdx !== null ? slices[hoverIdx].nome.split(" ").slice(-1)[0] : "Total"));
+}
+function SimpleGroupedBarChart({
+  data,
+  width = 600,
+  height = 260,
+  series
+}) {
+  const padding = {
+    top: 16,
+    right: 16,
+    bottom: 28,
+    left: 36
+  };
+  const innerW = width - padding.left - padding.right;
+  const innerH = height - padding.top - padding.bottom;
+  const maxVal = Math.max(...data.flatMap(d => series.map(s => d[s.key]))) * 1.15;
+  const groupW = innerW / data.length;
+  const barW = groupW * 0.55 / series.length;
+  const gridLines = 4;
+  const [hover, setHover] = useState(null);
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: `0 0 ${width} ${height}`,
+    width: "100%",
+    height: height,
+    onMouseLeave: () => setHover(null)
+  }, Array.from({
+    length: gridLines + 1
+  }).map((_, i) => {
+    const y = padding.top + innerH / gridLines * i;
+    return /*#__PURE__*/React.createElement("line", {
+      key: i,
+      x1: padding.left,
+      x2: width - padding.right,
+      y1: y,
+      y2: y,
+      stroke: "var(--border-subtle)",
+      strokeWidth: "1"
+    });
+  }), data.map((d, gi) => {
+    const groupX = padding.left + gi * groupW + groupW * 0.22;
+    return /*#__PURE__*/React.createElement("g", {
+      key: gi
+    }, series.map((s, si) => {
+      const val = d[s.key];
+      const barH = val / maxVal * innerH;
+      const x = groupX + si * barW;
+      const y = padding.top + innerH - barH;
+      const isHover = hover && hover.gi === gi && hover.si === si;
+      return /*#__PURE__*/React.createElement("g", {
+        key: si
+      }, /*#__PURE__*/React.createElement("rect", {
+        x: x,
+        y: y,
+        width: barW - 3,
+        height: barH,
+        rx: "3",
+        fill: s.color,
+        opacity: hover && !isHover ? 0.5 : 1,
+        onMouseEnter: () => setHover({
+          gi,
+          si
+        }),
+        style: {
+          cursor: "pointer",
+          transition: "opacity .15s"
+        }
+      }), isHover && /*#__PURE__*/React.createElement("text", {
+        x: x + (barW - 3) / 2,
+        y: y - 6,
+        textAnchor: "middle",
+        fontSize: "11",
+        fontWeight: "700",
+        fill: "var(--text-primary)"
+      }, val));
+    }), /*#__PURE__*/React.createElement("text", {
+      x: groupX + barW * series.length / 2,
+      y: height - 6,
+      textAnchor: "middle",
+      fontSize: "11",
+      fill: "var(--text-tertiary)"
+    }, d.mes));
+  }));
+}
+function DashboardPage({
+  onSelectPerson
+}) {
+  const COLORS = ["#2563EB", "#0D9488", "#D97706", "#7C3AED", "#0EA5E9", "#DC2626", "#65A30D", "#9333EA", "#EA580C", "#0F766E"];
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "kpi-grid"
+  }, /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Users, null),
+    color: "#2563EB",
+    label: "Total de Colaboradores",
+    value: formatNum(KPIS.totalColaboradores),
+    delta: "+9 no mês",
+    deltaType: "up"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Briefcase, null),
+    color: "#D97706",
+    label: "Vagas Abertas",
+    value: KPIS.vagasAbertas,
+    delta: "3 urgentes",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.UserPlus, null),
+    color: "#16A34A",
+    label: "Admissões do Mês",
+    value: KPIS.admissoesMes,
+    delta: "+2 vs. mês anterior",
+    deltaType: "up"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.UserMinus, null),
+    color: "#DC2626",
+    label: "Desligamentos do Mês",
+    value: KPIS.desligamentosMes,
+    delta: "-1 vs. mês anterior",
+    deltaType: "down"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Plane, null),
+    color: "#0EA5E9",
+    label: "Em Férias",
+    value: KPIS.emFerias,
+    delta: "11 colaboradores",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Star, null),
+    color: "#7C3AED",
+    label: "Aniversariantes do Mês",
+    value: KPIS.aniversariantesMes,
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.AlertTriangle, null),
+    color: "#DC2626",
+    label: "Experiência Vencendo",
+    value: KPIS.contratosExperienciaVencendo,
+    delta: "próx. 15 dias",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.GraduationCap, null),
+    color: "#D97706",
+    label: "Treinamentos Pendentes",
+    value: KPIS.treinamentosPendentes,
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Clock, null),
+    color: "#0D9488",
+    label: "Horas Extras (mês)",
+    value: formatNum(KPIS.horasExtrasMes),
+    unit: "h",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Layers, null),
+    color: "#0EA5E9",
+    label: "Banco de Horas",
+    value: formatNum(KPIS.bancoDeHoras),
+    unit: "h",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Activity, null),
+    color: "#2563EB",
+    label: "Tempo Médio de Contratação",
+    value: KPIS.tempoMedioContratacao,
+    unit: "dias",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.TrendingDown, null),
+    color: "#DC2626",
+    label: "Turnover Mensal",
+    value: KPIS.turnoverMensal,
+    unit: "%",
+    delta: "12m: 14,2%",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Activity, null),
+    color: "#D97706",
+    label: "Absenteísmo",
+    value: KPIS.absenteismo,
+    unit: "%",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.DollarSign, null),
+    color: "#16A34A",
+    label: "Custo Total da Folha",
+    value: formatBRL(KPIS.custoFolhaTotal),
+    delta: "+1,4% vs. mês anterior",
+    deltaType: "up"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Evolução Mensal do Quadro de Funcionários"), /*#__PURE__*/React.createElement("div", {
+    className: "panel-sub"
+  }, "Headcount total nos últimos 12 meses")), /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-success"
+  }, /*#__PURE__*/React.createElement(Icons.TrendingUp, {
+    style: {
+      width: 11,
+      height: 11
+    }
+  }), " +8% no ano")), /*#__PURE__*/React.createElement(SimpleAreaChart, {
+    data: KPIS.evolucaoQuadro,
+    height: 260,
+    color: "#2563EB",
+    min: 270,
+    max: 320
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Headcount por Shopping")), /*#__PURE__*/React.createElement(SimpleDonutChart, {
+    data: KPIS.headcountShopping,
+    colors: COLORS,
+    size: 200
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 6
+    }
+  }, KPIS.headcountShopping.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      fontSize: 12,
+      padding: "5px 0"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 9,
+      height: 9,
+      borderRadius: 3,
+      background: COLORS[i]
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      color: "var(--text-secondary)"
+    }
+  }, d.nome), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      color: "var(--text-primary)"
+    }
+  }, d.valor)))))), /*#__PURE__*/React.createElement("div", {
+    className: "grid-3col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Headcount por Departamento")), /*#__PURE__*/React.createElement(BarList, {
+    data: KPIS.headcountDepartamento
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Custo por Shopping")), /*#__PURE__*/React.createElement(BarList, {
+    data: KPIS.custoPorShopping.map(d => ({
+      nome: d.nome,
+      valor: d.valor
+    }))
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 10,
+      paddingTop: 10,
+      borderTop: "1px solid var(--border-subtle)"
+    }
+  }, KPIS.custoPorShopping.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 11.5,
+      color: "var(--text-tertiary)",
+      marginBottom: 3
+    }
+  }, /*#__PURE__*/React.createElement("span", null, d.nome), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontWeight: 700,
+      color: "var(--text-secondary)"
+    }
+  }, formatBRL(d.valor)))))), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Aniversariantes do Mês"))), ANIVERSARIANTES_MES.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    className: "empty-state"
+  }, /*#__PURE__*/React.createElement(Icons.Star, null), /*#__PURE__*/React.createElement("div", {
+    className: "empty-state-title"
+  }, "Nenhum aniversariante")) : ANIVERSARIANTES_MES.map(p => /*#__PURE__*/React.createElement("div", {
+    className: "list-row",
+    key: p.id,
+    style: {
+      cursor: "pointer"
+    },
+    onClick: () => onSelectPerson(p)
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: p.nome,
+    size: 34,
+    seed: p.id
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "list-row-main"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "list-row-title"
+  }, p.nome), /*#__PURE__*/React.createElement("div", {
+    className: "list-row-meta"
+  }, p.cargo)), /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-info"
+  }, p.aniversario.split("-")[1], "/", p.aniversario.split("-")[0]))))), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Vagas Abertas — Acompanhamento"), /*#__PURE__*/React.createElement("span", {
+    className: "panel-link"
+  }, "Ver todas →")), /*#__PURE__*/React.createElement("div", {
+    className: "table-wrap"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "data-table"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Cargo"), /*#__PURE__*/React.createElement("th", null, "Shopping"), /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", null, "Dias Aberto"), /*#__PURE__*/React.createElement("th", null, "Prioridade"))), /*#__PURE__*/React.createElement("tbody", null, VAGAS.map(v => /*#__PURE__*/React.createElement("tr", {
+    key: v.id
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      fontWeight: 600
+    }
+  }, v.cargo), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--text-secondary)"
+    }
+  }, v.shopping), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-info"
+  }, v.status)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "badge " + (v.diasAberto > 30 ? "badge-danger" : v.diasAberto > 15 ? "badge-warning" : "badge-neutral")
+  }, v.diasAberto, " dias")), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "badge " + (v.prioridade === "Urgente" ? "badge-danger" : v.prioridade === "Alta" ? "badge-warning" : "badge-neutral")
+  }, v.prioridade)))))))), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Alertas Automáticos")), /*#__PURE__*/React.createElement(AlertItem, {
+    icon: /*#__PURE__*/React.createElement(Icons.AlertTriangle, null),
+    color: "#DC2626",
+    title: "4 contratos de experiência vencem em até 15 dias",
+    sub: "Beatriz Ferreira, Carla Souza e mais 2"
+  }), /*#__PURE__*/React.createElement(AlertItem, {
+    icon: /*#__PURE__*/React.createElement(Icons.GraduationCap, null),
+    color: "#D97706",
+    title: "23 treinamentos pendentes ou vencidos",
+    sub: "NR-23, NR-10 e Brigada de Incêndio"
+  }), /*#__PURE__*/React.createElement(AlertItem, {
+    icon: /*#__PURE__*/React.createElement(Icons.Briefcase, null),
+    color: "#D97706",
+    title: "2 vagas abertas há mais de 30 dias",
+    sub: "Técnico de Manutenção · Analista Financeiro Jr."
+  }), /*#__PURE__*/React.createElement(AlertItem, {
+    icon: /*#__PURE__*/React.createElement(Icons.Plane, null),
+    color: "#0EA5E9",
+    title: "6 colaboradores com férias vencidas",
+    sub: "Verificar cronograma anual"
+  }), /*#__PURE__*/React.createElement(AlertItem, {
+    icon: /*#__PURE__*/React.createElement(Icons.FileText, null),
+    color: "#64748B",
+    title: "9 documentações pendentes",
+    sub: "ASO e exames periódicos",
+    last: true
+  }))));
+}
+function AlertItem({
+  icon,
+  color,
+  title,
+  sub,
+  last
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 12,
+      padding: "12px 2px",
+      borderBottom: last ? "none" : "1px solid var(--border-subtle)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 34,
+      height: 34,
+      borderRadius: 9,
+      background: `${color}1A`,
+      color,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexShrink: 0
+    }
+  }, icon), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      fontWeight: 600,
+      color: "var(--text-primary)"
+    }
+  }, title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "var(--text-tertiary)",
+      marginTop: 2
+    }
+  }, sub)));
+}
+
+// ============================================================
+// ORGANOGRAMA — árvore interativa, expansível
+// ============================================================
+function OrgNode({
+  node,
+  onSelectPerson,
+  depth
+}) {
+  const [expanded, setExpanded] = useState(depth < 2);
+  const hasChildren = node.filhos && node.filhos.length > 0;
+  const totalSubordinados = countAll(node);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "org-node-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "org-node"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "org-card" + (depth === 0 ? " root" : ""),
+    onClick: () => onSelectPerson(node)
+  }, totalSubordinados > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "org-card-count"
+  }, totalSubordinados), /*#__PURE__*/React.createElement(Avatar, {
+    name: node.nome,
+    size: 40,
+    seed: node.id
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "org-card-info"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "org-card-name",
+    title: node.nome
+  }, node.nome), /*#__PURE__*/React.createElement("div", {
+    className: "org-card-role",
+    title: node.cargo
+  }, node.cargo)), hasChildren && /*#__PURE__*/React.createElement("div", {
+    className: "org-toggle",
+    onClick: e => {
+      e.stopPropagation();
+      setExpanded(!expanded);
+    }
+  }, expanded ? "−" : "+")), hasChildren && expanded && /*#__PURE__*/React.createElement("div", {
+    className: "org-children"
+  }, node.filhos.map(child => /*#__PURE__*/React.createElement(OrgNode, {
+    key: child.id,
+    node: child,
+    onSelectPerson: onSelectPerson,
+    depth: depth + 1
+  })))));
+}
+function countAll(node) {
+  if (!node.filhos || node.filhos.length === 0) return 0;
+  return node.filhos.length + node.filhos.reduce((sum, c) => sum + countAll(c), 0);
+}
+function OrganogramaPage({
+  onSelectPerson
+}) {
+  const [zoom, setZoom] = useState(1);
+  const [filterShopping, setFilterShopping] = useState("Todos");
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "filter-bar"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "filter-select",
+    value: filterShopping,
+    onChange: e => setFilterShopping(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", null, "Todos os Shoppings"), SHOPPINGS.map(s => /*#__PURE__*/React.createElement("option", {
+    key: s
+  }, s))), /*#__PURE__*/React.createElement("select", {
+    className: "filter-select"
+  }, /*#__PURE__*/React.createElement("option", null, "Todos os Departamentos"), DEPARTAMENTOS.map(d => /*#__PURE__*/React.createElement("option", {
+    key: d
+  }, d))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    onClick: () => setZoom(z => Math.max(0.6, z - 0.1)),
+    style: {
+      width: 34,
+      height: 34
+    }
+  }, "−"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: "var(--text-secondary)",
+      width: 42,
+      textAlign: "center"
+    }
+  }, Math.round(zoom * 100), "%"), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    onClick: () => setZoom(z => Math.min(1.4, z + 0.1)),
+    style: {
+      width: 34,
+      height: 34
+    }
+  }, "+")), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost"
+  }, /*#__PURE__*/React.createElement(Icons.Download, null), " Exportar")), /*#__PURE__*/React.createElement("div", {
+    className: "org-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "org-tree",
+    style: {
+      transform: `scale(${zoom})`,
+      transformOrigin: "top center",
+      transition: "transform .15s"
+    }
+  }, /*#__PURE__*/React.createElement(OrgNode, {
+    node: ORG_TREE,
+    onSelectPerson: onSelectPerson,
+    depth: 0
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginTop: 16,
+      display: "flex",
+      gap: 16,
+      fontSize: 12,
+      color: "var(--text-tertiary)"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement(Icons.CheckCircle, {
+    style: {
+      width: 13,
+      height: 13,
+      color: "var(--c-success)"
+    }
+  }), " Atualizado automaticamente ao alterar gestor imediato no cadastro"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement(Icons.Users, {
+    style: {
+      width: 13,
+      height: 13
+    }
+  }), " ", COLABORADORES.length, " colaboradores na estrutura exibida")));
+}
+
+// ============================================================
+// COLABORADORES — listagem com filtros
+// ============================================================
+function ColaboradoresPage({
+  onSelectPerson
+}) {
+  const [shoppingF, setShoppingF] = useState("Todos");
+  const [deptoF, setDeptoF] = useState("Todos");
+  const [statusF, setStatusF] = useState("Todos");
+  const filtered = useMemo(() => {
+    return COLABORADORES.filter(c => (shoppingF === "Todos" || c.shopping === shoppingF) && (deptoF === "Todos" || c.departamento === deptoF) && (statusF === "Todos" || c.status === statusF));
+  }, [shoppingF, deptoF, statusF]);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "filter-bar"
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "filter-select",
+    value: shoppingF,
+    onChange: e => setShoppingF(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", null, "Todos"), SHOPPINGS.map(s => /*#__PURE__*/React.createElement("option", {
+    key: s
+  }, s))), /*#__PURE__*/React.createElement("select", {
+    className: "filter-select",
+    value: deptoF,
+    onChange: e => setDeptoF(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", null, "Todos"), DEPARTAMENTOS.map(d => /*#__PURE__*/React.createElement("option", {
+    key: d
+  }, d))), /*#__PURE__*/React.createElement("select", {
+    className: "filter-select",
+    value: statusF,
+    onChange: e => setStatusF(e.target.value)
+  }, /*#__PURE__*/React.createElement("option", null, "Todos"), /*#__PURE__*/React.createElement("option", null, "Ativo"), /*#__PURE__*/React.createElement("option", null, "Experiência")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-neutral"
+  }, filtered.length, " resultados"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost"
+  }, /*#__PURE__*/React.createElement(Icons.Download, null), " Exportar"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary"
+  }, /*#__PURE__*/React.createElement(Icons.UserPlus, null), " Novo Colaborador")), /*#__PURE__*/React.createElement("div", {
+    className: "panel",
+    style: {
+      padding: 0,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "table-wrap"
+  }, /*#__PURE__*/React.createElement("table", {
+    className: "data-table"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Colaborador"), /*#__PURE__*/React.createElement("th", null, "Matrícula"), /*#__PURE__*/React.createElement("th", null, "Cargo"), /*#__PURE__*/React.createElement("th", null, "Departamento"), /*#__PURE__*/React.createElement("th", null, "Shopping"), /*#__PURE__*/React.createElement("th", null, "Admissão"), /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", null))), /*#__PURE__*/React.createElement("tbody", null, filtered.map(c => /*#__PURE__*/React.createElement("tr", {
+    key: c.id,
+    onClick: () => onSelectPerson(c)
+  }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
+    className: "row-person"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: c.nome,
+    size: 34,
+    seed: c.id
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "row-person-name"
+  }, c.nome), /*#__PURE__*/React.createElement("div", {
+    className: "row-person-sub"
+  }, c.email)))), /*#__PURE__*/React.createElement("td", null, c.matricula), /*#__PURE__*/React.createElement("td", null, c.cargo), /*#__PURE__*/React.createElement("td", null, c.departamento), /*#__PURE__*/React.createElement("td", {
+    style: {
+      color: "var(--text-secondary)"
+    }
+  }, c.shopping), /*#__PURE__*/React.createElement("td", null, new Date(c.admissao).toLocaleDateString("pt-BR")), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+    className: "badge " + (c.status === "Ativo" ? "badge-success" : "badge-warning")
+  }, c.status)), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement(Icons.ChevronRight, {
+    style: {
+      width: 16,
+      height: 16,
+      color: "var(--text-tertiary)"
+    }
+  })))))))));
+}
+
+// ============================================================
+// FICHA DO COLABORADOR — Drawer lateral
+// ============================================================
+function EmployeeDrawer({
+  person,
+  onClose
+}) {
+  if (!person) return null;
+  const gestor = COLABORADORES.find(c => c.id === person.gestorId);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "drawer-overlay",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer",
+    onClick: e => e.stopPropagation()
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-head"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-close",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(Icons.X, null)), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-avatar-row"
+  }, /*#__PURE__*/React.createElement(Avatar, {
+    name: person.nome,
+    size: 64,
+    seed: person.id,
+    fontSize: 22
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-name"
+  }, person.nome), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-role"
+  }, person.cargo, " · ", person.departamento), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-tags"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "drawer-tag"
+  }, person.matricula), /*#__PURE__*/React.createElement("span", {
+    className: "drawer-tag"
+  }, person.shopping), /*#__PURE__*/React.createElement("span", {
+    className: "drawer-tag",
+    style: {
+      background: person.status === "Ativo" ? "rgba(22,163,74,0.35)" : "rgba(217,119,6,0.35)"
+    }
+  }, person.status))))), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-body"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section-title"
+  }, /*#__PURE__*/React.createElement(Icons.IdCard, null), " Dados Pessoais"), /*#__PURE__*/React.createElement("div", {
+    className: "field-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "CPF"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.cpf)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "RG"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.rg)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Estado Civil"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.estadoCivil)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Escolaridade"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.escolaridade)), /*#__PURE__*/React.createElement("div", {
+    className: "field full"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Endereço"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.endereco)))), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section-title"
+  }, /*#__PURE__*/React.createElement(Icons.Mail, null), " Contato"), /*#__PURE__*/React.createElement("div", {
+    className: "field-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "E-mail"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.email)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Celular"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.celular)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Telefone"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.telefone)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Aniversário"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.aniversario.split("-").reverse().join("/"))))), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section-title"
+  }, /*#__PURE__*/React.createElement(Icons.Briefcase, null), " Dados Profissionais"), /*#__PURE__*/React.createElement("div", {
+    className: "field-grid"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Empresa"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.empresa)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Centro de Custo"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.centroCusto)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Gestor Imediato"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, gestor ? gestor.nome : "—")), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Tipo de Contrato"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.tipoContrato)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Data de Admissão"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, new Date(person.admissao).toLocaleDateString("pt-BR"))), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Salário"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, formatBRL(person.salario))), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Carga Horária"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.cargaHoraria)), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Escala / Horário"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value"
+  }, person.escala, " · ", person.horario)), person.fimExperiencia && /*#__PURE__*/React.createElement("div", {
+    className: "field full"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "field-label"
+  }, "Fim do Contrato de Experiência"), /*#__PURE__*/React.createElement("div", {
+    className: "field-value",
+    style: {
+      color: "var(--c-warning)"
+    }
+  }, new Date(person.fimExperiencia).toLocaleDateString("pt-BR"))))), person.cursos && person.cursos.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section-title"
+  }, /*#__PURE__*/React.createElement(Icons.GraduationCap, null), " Cursos e Treinamentos"), person.cursos.map((c, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "doc-chip"
+  }, /*#__PURE__*/React.createElement(Icons.Award, null), " ", c))), /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "drawer-section-title"
+  }, /*#__PURE__*/React.createElement(Icons.Folder, null), " Documentos"), ["Contrato de Trabalho", "RG / CPF", "CNH", "ASO — Atestado de Saúde Ocupacional", "Exames Periódicos"].map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "doc-chip",
+    style: {
+      justifyContent: "space-between"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement(Icons.FileText, null), " ", d), /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-success",
+    style: {
+      fontSize: 10
+    }
+  }, "Anexado")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 10,
+      marginTop: 4
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary",
+    style: {
+      flex: 1,
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Icons.FileText, null), " Ver Ficha Completa"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-ghost",
+    style: {
+      flex: 1,
+      justifyContent: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Icons.Org, null), " Ver no Organograma")))));
+}
+
+// ============================================================
+// PÁGINAS EM CONSTRUÇÃO (placeholders ilustrativos)
+// ============================================================
+function PlaceholderPage({
+  icon,
+  title,
+  desc
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "placeholder-panel"
+  }, icon, /*#__PURE__*/React.createElement("div", {
+    className: "placeholder-panel-title"
+  }, title), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: "var(--text-tertiary)",
+      maxWidth: 420
+    }
+  }, desc), /*#__PURE__*/React.createElement("span", {
+    className: "badge badge-info",
+    style: {
+      marginTop: 10
+    }
+  }, "Módulo da Fase 2 do roadmap")));
+}
+const PLACEHOLDERS = {
+  vagas: {
+    icon: /*#__PURE__*/React.createElement(Icons.Briefcase, null),
+    title: "Controle de Vagas — visão completa",
+    desc: "Funil completo de status (Aberta → Triagem → Entrevistas → Aprovado → Contratado), com prazos, gestor solicitante e prioridade. Prévia exibida no Dashboard."
+  },
+  recrutamento: {
+    icon: /*#__PURE__*/React.createElement(Icons.UserPlus, null),
+    title: "Recrutamento e Seleção",
+    desc: "Pipeline de candidatos, triagem de currículos, agenda de entrevistas e histórico de processos seletivos por vaga."
+  },
+  ferias: {
+    icon: /*#__PURE__*/React.createElement(Icons.Plane, null),
+    title: "Gestão de Férias",
+    desc: "Cronograma anual, saldo de férias por colaborador, alertas de férias vencidas e simulação de programação coletiva."
+  },
+  treinamentos: {
+    icon: /*#__PURE__*/React.createElement(Icons.GraduationCap, null),
+    title: "Treinamentos e Capacitação",
+    desc: "Trilhas obrigatórias por cargo, vencimentos de certificações (NRs), histórico de capacitação e emissão de certificados."
+  },
+  documentos: {
+    icon: /*#__PURE__*/React.createElement(Icons.Folder, null),
+    title: "Repositório de Documentos",
+    desc: "Upload e organização de contratos, documentos pessoais, exames e advertências, vinculados à ficha de cada colaborador."
+  },
+  avaliacoes: {
+    icon: /*#__PURE__*/React.createElement(Icons.Star, null),
+    title: "Avaliação de Desempenho",
+    desc: "Ciclos de avaliação 90/180/360°, metas individuais, PDI (Plano de Desenvolvimento Individual) e histórico de feedbacks."
+  },
+  relatorios: {
+    icon: /*#__PURE__*/React.createElement(Icons.FileText, null),
+    title: "Central de Relatórios",
+    desc: "Geração de relatórios customizados com exportação para Excel, PDF e CSV, com filtros salvos e agendamento de envio automático."
+  },
+  configuracoes: {
+    icon: /*#__PURE__*/React.createElement(Icons.Settings, null),
+    title: "Configurações do Sistema",
+    desc: "Gestão de usuários, perfis de acesso (Diretoria, RH, Financeiro, Jurídico), parâmetros da empresa e integrações."
+  }
+};
+
+// ============================================================
+// INDICADORES PAGE
+// ============================================================
+function IndicadoresPage() {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "grid-3col"
+  }, /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.TrendingDown, null),
+    color: "#DC2626",
+    label: "Turnover (12 meses)",
+    value: KPIS.turnoverAcumulado12m,
+    unit: "%",
+    delta: "-0,6pp vs. ano anterior",
+    deltaType: "down"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Activity, null),
+    color: "#D97706",
+    label: "Absenteísmo Médio",
+    value: KPIS.absenteismo,
+    unit: "%",
+    deltaType: "neutral"
+  }), /*#__PURE__*/React.createElement(KpiCard, {
+    icon: /*#__PURE__*/React.createElement(Icons.Clock, null),
+    color: "#2563EB",
+    label: "Tempo Médio de Permanência",
+    value: "3,4",
+    unit: "anos",
+    deltaType: "neutral"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "grid-2col"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Colaboradores por Cargo (Top 10)")), /*#__PURE__*/React.createElement(BarList, {
+    data: [{
+      nome: "Agente de Segurança",
+      valor: 38
+    }, {
+      nome: "Auxiliar de Limpeza",
+      valor: 34
+    }, {
+      nome: "Técnico de Manutenção",
+      valor: 28
+    }, {
+      nome: "Analista de RH",
+      valor: 14
+    }, {
+      nome: "Vendedor",
+      valor: 42
+    }, {
+      nome: "Supervisor de Operações",
+      valor: 9
+    }, {
+      nome: "Analista Financeiro",
+      valor: 11
+    }, {
+      nome: "Recepcionista",
+      valor: 16
+    }, {
+      nome: "Coordenador",
+      valor: 13
+    }, {
+      nome: "Estagiário",
+      valor: 18
+    }]
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Salário Médio por Shopping")), /*#__PURE__*/React.createElement(BarList, {
+    data: [{
+      nome: "Shopping Vitória Plaza",
+      valor: 6850
+    }, {
+      nome: "Shopping Costa Norte",
+      valor: 6240
+    }, {
+      nome: "Shopping Bela Vista",
+      valor: 5980
+    }]
+  }))), /*#__PURE__*/React.createElement("div", {
+    className: "panel"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "panel-title"
+  }, "Admissões vs. Desligamentos — Últimos 12 Meses")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 16,
+      marginBottom: 12,
+      fontSize: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 9,
+      height: 9,
+      borderRadius: 3,
+      background: "#16A34A"
+    }
+  }), " Admissões"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 6
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 9,
+      height: 9,
+      borderRadius: 3,
+      background: "#DC2626"
+    }
+  }), " Desligamentos")), /*#__PURE__*/React.createElement(SimpleGroupedBarChart, {
+    height: 260,
+    series: [{
+      key: "adm",
+      color: "#16A34A"
+    }, {
+      key: "des",
+      color: "#DC2626"
+    }],
+    data: [{
+      mes: "Jul",
+      adm: 7,
+      des: 4
+    }, {
+      mes: "Ago",
+      adm: 9,
+      des: 6
+    }, {
+      mes: "Set",
+      adm: 11,
+      des: 5
+    }, {
+      mes: "Out",
+      adm: 8,
+      des: 7
+    }, {
+      mes: "Nov",
+      adm: 6,
+      des: 5
+    }, {
+      mes: "Dez",
+      adm: 10,
+      des: 8
+    }, {
+      mes: "Jan",
+      adm: 5,
+      des: 3
+    }, {
+      mes: "Fev",
+      adm: 8,
+      des: 4
+    }, {
+      mes: "Mar",
+      adm: 9,
+      des: 6
+    }, {
+      mes: "Abr",
+      adm: 7,
+      des: 5
+    }, {
+      mes: "Mai",
+      adm: 8,
+      des: 4
+    }, {
+      mes: "Jun",
+      adm: 9,
+      des: 5
+    }]
+  })));
+}
+
+// ============================================================
+// APP ROOT
+// ============================================================
+function App() {
+  const [page, setPage] = useState("dashboard");
+  const [collapsed, setCollapsed] = useState(false);
+  const [theme, setTheme] = useState("light");
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+  const searchResults = useMemo(() => {
+    if (!searchQuery) return [];
+    const q = searchQuery.toLowerCase();
+    return COLABORADORES.filter(c => c.nome.toLowerCase().includes(q) || c.cargo.toLowerCase().includes(q) || c.matricula.includes(q) || c.cpf.includes(q) || c.departamento.toLowerCase().includes(q) || c.shopping.toLowerCase().includes(q));
+  }, [searchQuery]);
+  const pageMeta = PAGE_META[page];
+  function renderPage() {
+    switch (page) {
+      case "dashboard":
+        return /*#__PURE__*/React.createElement(DashboardPage, {
+          onSelectPerson: setSelectedPerson
+        });
+      case "organograma":
+        return /*#__PURE__*/React.createElement(OrganogramaPage, {
+          onSelectPerson: setSelectedPerson
+        });
+      case "colaboradores":
+        return /*#__PURE__*/React.createElement(ColaboradoresPage, {
+          onSelectPerson: setSelectedPerson
+        });
+      case "indicadores":
+        return /*#__PURE__*/React.createElement(IndicadoresPage, null);
+      default:
+        return /*#__PURE__*/React.createElement(PlaceholderPage, PLACEHOLDERS[page]);
+    }
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "app-shell"
+  }, /*#__PURE__*/React.createElement(Sidebar, {
+    page: page,
+    setPage: setPage,
+    collapsed: collapsed,
+    setCollapsed: setCollapsed
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "main-area"
+  }, /*#__PURE__*/React.createElement(Topbar, {
+    pageMeta: pageMeta,
+    theme: theme,
+    setTheme: setTheme,
+    onSearch: setSearchQuery,
+    searchResults: searchResults,
+    onSelectPerson: setSelectedPerson
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "content-header"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "content-eyebrow"
+  }, pageMeta.eyebrow), /*#__PURE__*/React.createElement("div", {
+    className: "content-h1"
+  }, pageMeta.title), /*#__PURE__*/React.createElement("div", {
+    className: "content-sub"
+  }, pageMeta.sub))), renderPage())), /*#__PURE__*/React.createElement(EmployeeDrawer, {
+    person: selectedPerson,
+    onClose: () => setSelectedPerson(null)
+  }));
+}
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(/*#__PURE__*/React.createElement(App, null));
+</script>
+</body>
+</html>
