@@ -1,6 +1,6 @@
 # Status do projeto — RH Litoral
 
-> Última atualização: **25/06/2026**
+> Última atualização: **03/07/2026**
 
 ## Onde estamos
 
@@ -8,8 +8,16 @@
 |------|---------|----------|
 | **1 — Fundação** | Documentação técnica (`docs/`) + protótipo (`prototipo/index.html`) | ✅ Concluído |
 | **2 — Scaffold da aplicação** | Monorepo `app/` (backend NestJS+Prisma + frontend React/Vite) | ✅ Scaffold pronto e compilando |
+| **2 — Base de deploy (Render)** | `render.yaml` (Web Service + PostgreSQL), migração `0_init`, seed no boot, serve estático + health check | ✅ Pronto para publicar (ver `DEPLOY.md`) |
 | 2 — Consolidação de RH | Telas restantes + cifragem CPF + jobs de alerta | ⏳ Próximo |
 | 3–6 — Integrações | Financeiro · Jurídico · Facilities · Portal Único | ⏳ Planejado |
+
+## Deploy no Render
+
+Blueprint pronto na raiz (`render.yaml`): **1 Web Service** (NestJS serve a API `/api/v1`
++ o frontend estático) + **1 PostgreSQL**. Passo a passo e credenciais de teste em
+[`DEPLOY.md`](DEPLOY.md). Migração inicial em `app/backend/prisma/migrations/0_init/`;
+seed idempotente no boot (`SeedService`). URL prevista: **https://rh-litoral.onrender.com**.
 
 ## Decisões de arquitetura (Fase 2)
 

@@ -1,0 +1,36 @@
+# Blueprint do Render — RH Litoral
+# 1 Web Service (NestJS servindo a API /api/v1 + o frontend estático) + 1 PostgreSQL.
+# Deploy: no painel do Render → New + → Blueprint → aponte para este repositório.
+
+services:
+  - type: web
+    name: rh-litoral
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: >-
+      npm install --prefix app/frontend &&
+      npm run build --prefix app/frontend &&
+      npm install --prefix app/backend &&
+      npm run prisma:generate --prefix app/backend &&
+      npm run build --prefix app/backend
+    startCommand: >-
+      npm run prisma:deploy --prefix app/backend &&
+      node app/backend/dist/main.js
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rh-litoral-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 8h
+      - key: NODE_VERSION
+        value: 20.18.0
+
+databases:
+  - name: rh-litoral-db
+    plan: free
+    region: oregon

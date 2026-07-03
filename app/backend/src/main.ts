@@ -15,8 +15,8 @@ async function bootstrap() {
   });
 
   const port = Number(process.env.PORT) || 3333;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   // eslint-disable-next-line no-console
-  console.log(`RH Litoral API em http://localhost:${port}/api/v1`);
+  console.log(`RH Litoral no ar na porta ${port} (API em /api/v1)`);
 }
 bootstrap();
