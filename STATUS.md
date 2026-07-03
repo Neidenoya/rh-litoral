@@ -8,7 +8,8 @@
 |------|---------|----------|
 | **1 — Fundação** | Documentação técnica (`docs/`) + protótipo (`prototipo/index.html`) | ✅ Concluído |
 | **2 — Scaffold da aplicação** | Monorepo `app/` (backend NestJS+Prisma + frontend React/Vite) | ✅ Scaffold pronto e compilando |
-| **2 — Base de deploy (Render)** | `render.yaml` (Web Service + PostgreSQL), migração `0_init`, seed no boot, serve estático + health check | ✅ Pronto para publicar (ver `DEPLOY.md`) |
+| **2 — Base de deploy (Render)** | `render.yaml` (Web Service; Postgres externo/Neon via `DATABASE_URL`), migração `0_init`, seed no boot, serve estático + health check | ✅ Pronto para publicar (ver `DEPLOY.md`) |
+| **Docs de produção** | `PRODUCAO.md` (checklist priorizado) + guia de implantação na rede do Grupo Peralta (README) | ✅ Publicado 03/07 |
 | 2 — Consolidação de RH | Telas restantes + cifragem CPF + jobs de alerta | ⏳ Próximo |
 | 3–6 — Integrações | Financeiro · Jurídico · Facilities · Portal Único | ⏳ Planejado |
 
