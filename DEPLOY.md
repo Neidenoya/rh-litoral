@@ -1,18 +1,32 @@
 # Deploy no Render — RH Litoral
 
-O repositório já traz um **Blueprint** (`render.yaml` na raiz) que provisiona tudo:
-**1 Web Service** (NestJS servindo a API `/api/v1` **e** o frontend estático) +
-**1 PostgreSQL**. Não há passos manuais de infraestrutura.
+O repositório traz um **Blueprint** (`render.yaml` na raiz) com **1 Web Service**
+(NestJS servindo a API `/api/v1` **e** o frontend estático). O **PostgreSQL não é
+criado pelo Blueprint** — o Render Free permite só 1 banco grátis por conta (já usado
+por outro projeto). Use um **Postgres externo dedicado** e informe a `DATABASE_URL`.
 
-## Passo a passo (uma vez)
+## Passo 1 — Criar um PostgreSQL grátis (Neon)
 
-1. Acesse o painel do Render → **New +** → **Blueprint**.
-2. Conecte a conta do GitHub e selecione o repositório **`fleandro1234-netizen/rh-litoral`**
-   (repo privado — autorize o acesso do Render se pedir).
-3. O Render lê o `render.yaml`, mostra os recursos (`rh-litoral` + `rh-litoral-db`) e
-   pede **Apply**. Confirme.
-4. Aguarde o primeiro deploy (~3–5 min): build do frontend + backend, migração do
-   banco e seed automático.
+1. Acesse **https://neon.tech** e entre com o GitHub.
+2. **Create project** (região mais próxima). Ao final, copie a **connection string**
+   (formato `postgresql://usuario:senha@host/dbname?sslmode=require`).
+   - Use a conexão **direta** (sem `-pooler` no host) para o Prisma migrar sem erro.
+
+> Alternativas equivalentes: Supabase, Railway ou ElephantSQL — qualquer Postgres com
+> uma connection string pública serve.
+
+## Passo 2 — Deploy no Render (Blueprint)
+
+1. Painel do Render → **New +** → **Blueprint**.
+2. Aponte para o repositório (campo **Public Git Repository**:
+   `https://github.com/Neidenoya/rh-litoral`) → **main**.
+3. O Render lê o `render.yaml` e mostra o serviço **`rh-litoral`**. Em
+   **Environment / variables**, cole a **`DATABASE_URL`** do Passo 1.
+4. **Apply**. Aguarde o primeiro deploy (~3–5 min): build do frontend + backend,
+   migração `0_init` e seed automático.
+
+> Se a sync do Blueprint não pedir a variável, defina-a depois em
+> **serviço `rh-litoral` → Environment → `DATABASE_URL`** e clique em **Manual Deploy**.
 
 ## URL para enviar à revisão
 
@@ -44,13 +58,13 @@ confira a URL exata no topo da página do serviço.
 - **Start:** `prisma migrate deploy` (cria as tabelas via a migração `0_init`) e sobe a API.
 - **Seed idempotente no boot:** o `SeedService` popula a base **apenas se estiver vazia**
   (não sobrescreve dados em deploys seguintes).
-- **Env vars:** `DATABASE_URL` (injetada do Postgres) e `JWT_SECRET` (gerada pelo Render).
+- **Env vars:** `DATABASE_URL` (Postgres externo, definida por você) e `JWT_SECRET`
+  (gerada pelo Render).
 
 ## Observações
 
 - **Plano Free:** o serviço **hiberna após inatividade**; a primeira requisição depois
-  disso leva ~30–50s para "acordar". O Postgres Free do Render tem limite de retenção —
-  para uso prolongado, migrar para um plano pago.
+  disso leva ~30–50s para "acordar".
 - **Trocar a senha de teste / desativar o seed:** defina a env `SEED_ON_BOOT=false` no
   serviço para não repopular, e gerencie os usuários pelo banco. Antes de um uso real,
   troque as senhas padrão (`litoral123`).
