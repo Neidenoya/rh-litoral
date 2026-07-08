@@ -40,3 +40,82 @@ export interface DashboardIndicadores {
   headcountShopping: HeadcountItem[];
   headcountDepartamento: HeadcountItem[];
 }
+
+// ── Fase 2 ──
+
+export interface VagaLista {
+  id: string;
+  status: string;
+  prioridade: string;
+  dataAbertura: string;
+  cargo: { nome: string };
+  departamento: { nome: string };
+  shopping: { nome: string };
+  gestorSolicitante: { id: string; nomeCompleto: string };
+  _count: { candidatos: number };
+}
+
+export interface FeriasLista {
+  id: string;
+  periodoAquisitivoInicio: string;
+  periodoAquisitivoFim: string;
+  dataInicioGozo: string | null;
+  dataFimGozo: string | null;
+  diasUtilizados: number;
+  saldoDias: number;
+  status: string;
+  colaborador: {
+    id: string;
+    nomeCompleto: string;
+    matricula: string;
+    departamento: { nome: string };
+  };
+}
+
+export interface TreinamentoCatalogo {
+  id: string;
+  nome: string;
+  tipo: string;
+  cargaHoraria: number | null;
+  validadeMeses: number | null;
+  _count: { colaboradores: number };
+}
+
+export interface MatriculaTreinamento {
+  id: string;
+  status: string;
+  dataRealizacao: string | null;
+  dataVencimento: string | null;
+  treinamento: { nome: string; tipo: string };
+  colaborador: { id: string; nomeCompleto: string; matricula: string };
+}
+
+export interface DocumentoLista {
+  id: string;
+  tipo: string;
+  arquivoUrl: string;
+  dataUpload: string;
+  colaborador: { id: string; nomeCompleto: string; matricula: string };
+}
+
+export interface AvaliacaoLista {
+  id: string;
+  ciclo: string | null;
+  periodo: string | null;
+  notaGestor: number | null;
+  notaAutoavaliacao: number | null;
+  colaborador: {
+    id: string;
+    nomeCompleto: string;
+    matricula: string;
+    cargo: { nome: string };
+  };
+}
+
+export interface RelatorioQuadro {
+  headcountDepartamento: HeadcountItem[];
+  headcountShopping: HeadcountItem[];
+  porContrato: HeadcountItem[];
+  porStatus: HeadcountItem[];
+  custoFolhaDepartamento: HeadcountItem[] | null;
+}

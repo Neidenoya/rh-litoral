@@ -38,7 +38,7 @@
 
 | # | Item | Prioridade | Status |
 |---|------|-----------|--------|
-| 3.1 | Telas **Vagas/R&S** (funil completo), **Férias**, **Treinamentos**, **Documentos**, **Avaliações**, **Relatórios** — hoje são placeholders "Em breve" | 🔴 | Pendente |
+| 3.1 | Telas **Vagas/R&S** (funil), **Férias**, **Treinamentos**, **Documentos**, **Avaliações**, **Relatórios** — leitura implementada e buildando (08/07); falta a **escrita** (cadastro/edição, abrir vaga, upload) | 🟡 | Leitura ✅ · escrita pendente |
 | 3.2 | **Upload de documentos** → object storage (S3/Azure Blob ou pasta de rede no cenário on-premise) | 🟡 | Pendente |
 | 3.3 | **Jobs de alertas automáticos** (cron 06:00): experiência a vencer, férias, treinamentos/ASO, vagas +30 dias, aniversariantes | 🟡 | Pendente |
 | 3.4 | **Edição de colaborador pela interface** (a API já valida ciclo hierárquico e audita; falta o formulário) | 🟡 | Pendente |

@@ -5,7 +5,12 @@ import { LoginPage } from './features/auth/LoginPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { OrganogramaPage } from './features/organograma/OrganogramaPage';
 import { ColaboradoresPage } from './features/colaboradores/ColaboradoresPage';
-import { EmBreve } from './components/EmBreve';
+import { VagasPage } from './features/vagas/VagasPage';
+import { FeriasPage } from './features/ferias/FeriasPage';
+import { TreinamentosPage } from './features/treinamentos/TreinamentosPage';
+import { DocumentosPage } from './features/documentos/DocumentosPage';
+import { AvaliacoesPage } from './features/avaliacoes/AvaliacoesPage';
+import { RelatoriosPage } from './features/relatorios/RelatoriosPage';
 
 export function App() {
   const { usuario } = useAuth();
@@ -25,12 +30,12 @@ export function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/organograma" element={<OrganogramaPage />} />
         <Route path="/colaboradores" element={<ColaboradoresPage />} />
-        <Route path="/vagas" element={<EmBreve titulo="Vagas" />} />
-        <Route path="/ferias" element={<EmBreve titulo="Férias" />} />
-        <Route path="/treinamentos" element={<EmBreve titulo="Treinamentos" />} />
-        <Route path="/documentos" element={<EmBreve titulo="Documentos" />} />
-        <Route path="/avaliacoes" element={<EmBreve titulo="Avaliações" />} />
-        <Route path="/relatorios" element={<EmBreve titulo="Relatórios" />} />
+        <Route path="/vagas" element={<VagasPage />} />
+        <Route path="/ferias" element={<FeriasPage />} />
+        <Route path="/treinamentos" element={<TreinamentosPage />} />
+        <Route path="/documentos" element={<DocumentosPage />} />
+        <Route path="/avaliacoes" element={<AvaliacoesPage />} />
+        <Route path="/relatorios" element={<RelatoriosPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>
