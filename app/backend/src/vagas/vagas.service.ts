@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrioridadeVaga, Prisma, StatusVaga } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateVagaDto } from './dto/create-vaga.dto';
 
 // Ordem do funil de R&S (CANCELADA fica fora — é estado terminal alternativo).
 const FLUXO: StatusVaga[] = [
@@ -51,6 +52,11 @@ export class VagasService {
       _count: { _all: true },
     });
     return grupos.map((g) => ({ status: g.status, total: g._count._all }));
+  }
+
+  async create(dto: CreateVagaDto) {
+    // vaga nasce sempre no início do funil (ABERTA)
+    return this.prisma.vaga.create({ data: { ...dto, status: 'ABERTA' } });
   }
 
   async avancar(id: string) {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, TipoDocumento } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateDocumentoDto } from './dto/create-documento.dto';
 
 export interface FiltroDocumento {
   colaboradorId?: string;
@@ -24,6 +25,17 @@ export class DocumentosService {
         },
       },
       orderBy: { dataUpload: 'desc' },
+    });
+  }
+
+  async create(dto: CreateDocumentoDto, usuarioId?: string) {
+    return this.prisma.documento.create({
+      data: {
+        colaboradorId: dto.colaboradorId,
+        tipo: dto.tipo,
+        arquivoUrl: dto.arquivoUrl,
+        usuarioUploadId: usuarioId ?? null,
+      },
     });
   }
 }

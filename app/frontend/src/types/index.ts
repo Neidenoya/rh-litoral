@@ -119,3 +119,12 @@ export interface RelatorioQuadro {
   porStatus: HeadcountItem[];
   custoFolhaDepartamento: HeadcountItem[] | null;
 }
+
+export interface Opcoes {
+  empresas: { id: string; razaoSocial: string }[];
+  shoppings: { id: string; nome: string }[];
+  departamentos: { id: string; nome: string }[];
+  cargos: { id: string; nome: string }[];
+  centrosCusto: { id: string; codigo: string }[];
+  colaboradores: { id: string; nomeCompleto: string }[];
+}

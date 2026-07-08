@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ColaboradoresModule } from './colaboradores/colaboradores.module';
 import { OrganogramaModule } from './organograma/organograma.module';
 import { IndicadoresModule } from './indicadores/indicadores.module';
+import { OpcoesModule } from './opcoes/opcoes.module';
 import { VagasModule } from './vagas/vagas.module';
 import { FeriasModule } from './ferias/ferias.module';
 import { TreinamentosModule } from './treinamentos/treinamentos.module';
@@ -31,6 +32,7 @@ import { HealthController } from './health.controller';
     ColaboradoresModule,
     OrganogramaModule,
     IndicadoresModule,
+    OpcoesModule,
     VagasModule,
     FeriasModule,
     TreinamentosModule,

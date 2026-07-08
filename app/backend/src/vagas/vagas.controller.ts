@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -11,6 +13,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { VagasService } from './vagas.service';
+import { CreateVagaDto } from './dto/create-vaga.dto';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('vagas')
@@ -29,6 +32,12 @@ export class VagasController {
   @Get('resumo')
   resumo() {
     return this.vagas.resumo();
+  }
+
+  @Roles(Perfil.RH, Perfil.GESTOR)
+  @Post()
+  create(@Body() dto: CreateVagaDto) {
+    return this.vagas.create(dto);
   }
 
   @Roles(Perfil.RH)

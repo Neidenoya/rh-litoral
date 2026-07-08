@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { useAuth } from '../../app/auth';
 import { Badge } from '../../components/Badge';
 import type { Tone } from '../../components/Badge';
-import type { VagaLista } from '../../types';
+import { Modal } from '../../components/Modal';
+import { VagaForm } from './VagaForm';
+import type { VagaLista, Opcoes } from '../../types';
 
 const COLUNAS: { status: string; label: string }[] = [
   { status: 'ABERTA', label: 'Aberta' },
@@ -25,10 +28,18 @@ export function VagasPage() {
   const qc = useQueryClient();
   const { usuario } = useAuth();
   const podeMover = usuario?.perfil === 'RH';
+  const podeAbrir = usuario?.perfil === 'RH' || usuario?.perfil === 'GESTOR';
+  const [abrir, setAbrir] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['vagas'],
     queryFn: () => api<VagaLista[]>('/vagas'),
+  });
+
+  const opcoes = useQuery({
+    queryKey: ['opcoes'],
+    queryFn: () => api<Opcoes>('/opcoes'),
+    enabled: podeAbrir,
   });
 
   const avancar = useMutation({
@@ -48,13 +59,33 @@ export function VagasPage() {
 
   return (
     <div>
-      <h1 className="content-h1">Vagas &amp; Recrutamento</h1>
-      <p className="content-sub">
-        Funil de R&amp;S — da abertura à contratação.{' '}
-        {podeMover
-          ? 'Avance ou cancele cada vaga.'
-          : 'Somente o perfil RH pode movimentar as vagas.'}
-      </p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 16,
+        }}
+      >
+        <div>
+          <h1 className="content-h1">Vagas &amp; Recrutamento</h1>
+          <p className="content-sub">
+            Funil de R&amp;S — da abertura à contratação.{' '}
+            {podeMover
+              ? 'Avance ou cancele cada vaga.'
+              : 'Somente o perfil RH pode movimentar as vagas.'}
+          </p>
+        </div>
+        {podeAbrir && (
+          <button
+            className="btn btn-primary"
+            style={{ width: 'auto', flexShrink: 0 }}
+            onClick={() => setAbrir(true)}
+          >
+            + Abrir vaga
+          </button>
+        )}
+      </div>
 
       <div className="funnel" style={{ marginTop: 22 }}>
         {COLUNAS.map((col, i) => {
@@ -111,6 +142,20 @@ export function VagasPage() {
         <p className="content-sub" style={{ marginTop: 16 }}>
           {canceladas.length} vaga(s) cancelada(s) fora do funil.
         </p>
+      )}
+
+      {abrir && (
+        <Modal titulo="Abrir nova vaga" onClose={() => setAbrir(false)}>
+          {opcoes.isLoading && <p className="content-sub">Carregando opções…</p>}
+          {opcoes.error && (
+            <p className="error-msg">
+              Erro ao carregar opções: {(opcoes.error as Error).message}
+            </p>
+          )}
+          {opcoes.data && (
+            <VagaForm opcoes={opcoes.data} onSaved={() => setAbrir(false)} />
+          )}
+        </Modal>
       )}
     </div>
   );
