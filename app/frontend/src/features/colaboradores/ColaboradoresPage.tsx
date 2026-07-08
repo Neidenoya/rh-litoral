@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
+import { useAuth } from '../../app/auth';
+import { Modal } from '../../components/Modal';
+import { ColaboradorForm } from './ColaboradorForm';
+import type { ColaboradorFormData } from './ColaboradorForm';
+import type { Opcoes } from '../../types';
 
 interface ColaboradorLista {
   id: string;
@@ -11,10 +16,50 @@ interface ColaboradorLista {
   shopping: { nome: string };
   status: string;
   salario: number | null;
+  // escalares para prefill de edição (a API retorna todos os campos)
+  cargoId: string;
+  departamentoId: string;
+  shoppingId: string;
+  empresaId: string;
+  centroCustoId: string | null;
+  gestorImediatoId: string | null;
+  dataAdmissao: string;
+  tipoContrato: string;
+  email: string | null;
+  celular: string | null;
+  cargaHoraria: string | null;
+  escala: string | null;
+}
+
+function paraFormulario(c: ColaboradorLista): ColaboradorFormData {
+  return {
+    id: c.id,
+    matricula: c.matricula,
+    nomeCompleto: c.nomeCompleto,
+    cargoId: c.cargoId,
+    departamentoId: c.departamentoId,
+    shoppingId: c.shoppingId,
+    empresaId: c.empresaId,
+    centroCustoId: c.centroCustoId ?? '',
+    gestorImediatoId: c.gestorImediatoId ?? '',
+    dataAdmissao: c.dataAdmissao ? c.dataAdmissao.slice(0, 10) : '',
+    tipoContrato: c.tipoContrato,
+    salario: c.salario != null ? String(c.salario) : '',
+    email: c.email ?? '',
+    celular: c.celular ?? '',
+    cargaHoraria: c.cargaHoraria ?? '',
+    escala: c.escala ?? '',
+    status: c.status,
+  };
 }
 
 export function ColaboradoresPage() {
+  const { usuario } = useAuth();
+  const podeEditar = usuario?.perfil === 'RH';
   const [busca, setBusca] = useState('');
+  const [editar, setEditar] = useState<ColaboradorFormData | null>(null);
+  const [novo, setNovo] = useState(false);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['colaboradores', busca],
     queryFn: () =>
@@ -23,12 +68,44 @@ export function ColaboradoresPage() {
       ),
   });
 
+  const opcoes = useQuery({
+    queryKey: ['opcoes'],
+    queryFn: () => api<Opcoes>('/opcoes'),
+    enabled: podeEditar,
+  });
+
+  const modalAberto = novo || editar != null;
+  const fechar = () => {
+    setNovo(false);
+    setEditar(null);
+  };
+
   return (
     <div>
-      <h1 className="content-h1">Colaboradores</h1>
-      <p className="content-sub">
-        Salário visível apenas para Diretoria, RH e Financeiro (mascarado por RBAC).
-      </p>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 16,
+        }}
+      >
+        <div>
+          <h1 className="content-h1">Colaboradores</h1>
+          <p className="content-sub">
+            Salário visível apenas para Diretoria, RH e Financeiro (mascarado por RBAC).
+          </p>
+        </div>
+        {podeEditar && (
+          <button
+            className="btn btn-primary"
+            style={{ width: 'auto', flexShrink: 0 }}
+            onClick={() => setNovo(true)}
+          >
+            + Novo colaborador
+          </button>
+        )}
+      </div>
 
       <input
         className="input"
@@ -42,29 +119,30 @@ export function ColaboradoresPage() {
       {error && <p className="error-msg">Erro: {(error as Error).message}</p>}
 
       {data && (
-        <div className="panel" style={{ padding: 0, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13.5 }}>
+        <div className="panel" style={{ padding: 0, overflow: 'hidden', marginTop: 8 }}>
+          <table className="tbl">
             <thead>
-              <tr style={{ textAlign: 'left', color: 'var(--text-tertiary)' }}>
-                <th style={th}>Matrícula</th>
-                <th style={th}>Nome</th>
-                <th style={th}>Cargo</th>
-                <th style={th}>Departamento</th>
-                <th style={th}>Shopping</th>
-                <th style={th}>Status</th>
-                <th style={{ ...th, textAlign: 'right' }}>Salário</th>
+              <tr>
+                <th>Matrícula</th>
+                <th>Nome</th>
+                <th>Cargo</th>
+                <th>Departamento</th>
+                <th>Shopping</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'right' }}>Salário</th>
+                {podeEditar && <th />}
               </tr>
             </thead>
             <tbody>
               {data.map((c) => (
-                <tr key={c.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                  <td style={td}>{c.matricula}</td>
-                  <td style={{ ...td, fontWeight: 600 }}>{c.nomeCompleto}</td>
-                  <td style={td}>{c.cargo.nome}</td>
-                  <td style={td}>{c.departamento.nome}</td>
-                  <td style={td}>{c.shopping.nome}</td>
-                  <td style={td}>{c.status}</td>
-                  <td style={{ ...td, textAlign: 'right' }}>
+                <tr key={c.id}>
+                  <td>{c.matricula}</td>
+                  <td style={{ fontWeight: 600 }}>{c.nomeCompleto}</td>
+                  <td>{c.cargo.nome}</td>
+                  <td>{c.departamento.nome}</td>
+                  <td>{c.shopping.nome}</td>
+                  <td>{c.status}</td>
+                  <td style={{ textAlign: 'right' }}>
                     {c.salario != null
                       ? c.salario.toLocaleString('pt-BR', {
                           style: 'currency',
@@ -73,21 +151,37 @@ export function ColaboradoresPage() {
                         })
                       : '—'}
                   </td>
+                  {podeEditar && (
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="btn-mini" onClick={() => setEditar(paraFormulario(c))}>
+                        Editar
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {modalAberto && (
+        <Modal titulo={editar ? 'Editar colaborador' : 'Novo colaborador'} onClose={fechar}>
+          {opcoes.isLoading && <p className="content-sub">Carregando opções…</p>}
+          {opcoes.error && (
+            <p className="error-msg">
+              Erro ao carregar opções: {(opcoes.error as Error).message}
+            </p>
+          )}
+          {opcoes.data && (
+            <ColaboradorForm
+              opcoes={opcoes.data}
+              inicial={editar ?? undefined}
+              onSaved={fechar}
+            />
+          )}
+        </Modal>
+      )}
     </div>
   );
 }
-
-const th: React.CSSProperties = {
-  padding: '12px 14px',
-  fontSize: 11,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.4px',
-};
-const td: React.CSSProperties = { padding: '11px 14px' };

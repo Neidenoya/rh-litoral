@@ -4,6 +4,12 @@ import {
   StatusColaborador,
   EstadoCivil,
   Perfil,
+  StatusVaga,
+  PrioridadeVaga,
+  StatusFerias,
+  TipoTreinamento,
+  StatusTreinamento,
+  TipoDocumento,
 } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
@@ -171,6 +177,143 @@ export async function popularBase(
   for (const u of usuarios) {
     await prisma.usuario.create({
       data: { email: u.email, senhaHash, perfil: u.perfil, colaboradorId: idPorOrd[u.ord] },
+    });
+  }
+
+  // ── Vagas (funil de R&S) ──
+  const VAGAS: {
+    cargo: string; departamento: string; shopping: string; gestorOrd: number;
+    status: StatusVaga; prioridade: PrioridadeVaga; abertura: string;
+    candidatos: { nome: string; etapa: string }[];
+  }[] = [
+    { cargo: 'Assistente Financeiro', departamento: 'Financeiro', shopping: 'Shopping Vitória Plaza', gestorOrd: 3, status: 'ABERTA', prioridade: 'MEDIA', abertura: '2026-06-20', candidatos: [] },
+    { cargo: 'Analista de RH Pleno', departamento: 'RH', shopping: 'Shopping Costa Norte', gestorOrd: 2, status: 'TRIAGEM', prioridade: 'ALTA', abertura: '2026-06-05', candidatos: [{ nome: 'Marina Alves Correia', etapa: 'Triagem' }, { nome: 'Paulo Reis Damasceno', etapa: 'Triagem' }] },
+    { cargo: 'Supervisor de Segurança', departamento: 'Segurança', shopping: 'Shopping Costa Norte', gestorOrd: 4, status: 'ENTREVISTA_RH', prioridade: 'URGENTE', abertura: '2026-05-15', candidatos: [{ nome: 'Anderson Melo Prado', etapa: 'Entrevista RH' }] },
+    { cargo: 'Coordenadora de Marketing', departamento: 'Marketing', shopping: 'Shopping Bela Vista', gestorOrd: 1, status: 'ENTREVISTA_GESTOR', prioridade: 'ALTA', abertura: '2026-05-02', candidatos: [{ nome: 'Fernanda Dias Moura', etapa: 'Entrevista Gestor' }] },
+    { cargo: 'Analista Jurídico', departamento: 'Jurídico', shopping: 'Shopping Vitória Plaza', gestorOrd: 8, status: 'APROVADO', prioridade: 'BAIXA', abertura: '2026-04-18', candidatos: [{ nome: 'Rafael Nunes Teixeira', etapa: 'Aprovado' }] },
+  ];
+  for (const v of VAGAS) {
+    await prisma.vaga.create({
+      data: {
+        cargoId: cargos[v.cargo],
+        departamentoId: departamentos[v.departamento],
+        shoppingId: shoppings[v.shopping],
+        gestorSolicitanteId: idPorOrd[v.gestorOrd],
+        status: v.status,
+        prioridade: v.prioridade,
+        dataAbertura: new Date(v.abertura),
+        candidatos: v.candidatos.length
+          ? { create: v.candidatos.map((c) => ({ nome: c.nome, etapaAtual: c.etapa })) }
+          : undefined,
+      },
+    });
+  }
+
+  // ── Férias ──
+  const FERIAS: {
+    ord: number; aqInicio: string; aqFim: string; inicioGozo?: string; fimGozo?: string;
+    dias: number; saldo: number; status: StatusFerias;
+  }[] = [
+    { ord: 1, aqInicio: '2024-03-10', aqFim: '2025-03-09', inicioGozo: '2025-07-01', fimGozo: '2025-07-30', dias: 30, saldo: 0, status: 'CONCLUIDA' },
+    { ord: 2, aqInicio: '2025-06-01', aqFim: '2026-05-31', dias: 0, saldo: 30, status: 'PROGRAMADA' },
+    { ord: 4, aqInicio: '2025-08-20', aqFim: '2026-08-19', inicioGozo: '2026-07-06', fimGozo: '2026-07-20', dias: 15, saldo: 15, status: 'EM_ANDAMENTO' },
+    { ord: 5, aqInicio: '2025-01-10', aqFim: '2026-01-09', dias: 10, saldo: 20, status: 'PROGRAMADA' },
+    { ord: 7, aqInicio: '2023-11-05', aqFim: '2024-11-04', dias: 0, saldo: 30, status: 'VENCIDA' },
+    { ord: 10, aqInicio: '2024-03-12', aqFim: '2025-03-11', dias: 0, saldo: 30, status: 'VENCIDA' },
+  ];
+  for (const f of FERIAS) {
+    await prisma.ferias.create({
+      data: {
+        colaboradorId: idPorOrd[f.ord],
+        periodoAquisitivoInicio: new Date(f.aqInicio),
+        periodoAquisitivoFim: new Date(f.aqFim),
+        dataInicioGozo: f.inicioGozo ? new Date(f.inicioGozo) : null,
+        dataFimGozo: f.fimGozo ? new Date(f.fimGozo) : null,
+        diasUtilizados: f.dias,
+        saldoDias: f.saldo,
+        status: f.status,
+      },
+    });
+  }
+
+  // ── Treinamentos (catálogo + situação por colaborador) ──
+  const TREINOS: {
+    nome: string; tipo: TipoTreinamento; carga: number; validade: number | null;
+    turmas: { ord: number; status: StatusTreinamento; realizacao?: string; vencimento?: string }[];
+  }[] = [
+    { nome: 'NR-23 — Prevenção e Combate a Incêndio', tipo: 'OBRIGATORIO', carga: 8, validade: 12, turmas: [
+      { ord: 10, status: 'VALIDO', realizacao: '2025-09-01', vencimento: '2026-09-01' },
+      { ord: 11, status: 'VENCIDO', realizacao: '2024-05-01', vencimento: '2025-05-01' },
+    ] },
+    { nome: 'LGPD para Colaboradores', tipo: 'OBRIGATORIO', carga: 4, validade: 24, turmas: [
+      { ord: 2, status: 'VALIDO', realizacao: '2025-03-10', vencimento: '2027-03-10' },
+      { ord: 5, status: 'VALIDO', realizacao: '2025-03-10', vencimento: '2027-03-10' },
+      { ord: 12, status: 'PENDENTE' },
+    ] },
+    { nome: 'Atendimento e Experiência do Cliente', tipo: 'OPCIONAL', carga: 6, validade: null, turmas: [
+      { ord: 4, status: 'VALIDO', realizacao: '2025-02-20' },
+    ] },
+    { nome: 'Liderança e Gestão de Equipes', tipo: 'OPCIONAL', carga: 16, validade: null, turmas: [
+      { ord: 4, status: 'PENDENTE' },
+      { ord: 8, status: 'PENDENTE' },
+    ] },
+  ];
+  for (const t of TREINOS) {
+    const treino = await prisma.treinamento.create({
+      data: { nome: t.nome, tipo: t.tipo, cargaHoraria: t.carga, validadeMeses: t.validade },
+    });
+    for (const tm of t.turmas) {
+      await prisma.colaboradorTreinamento.create({
+        data: {
+          treinamentoId: treino.id,
+          colaboradorId: idPorOrd[tm.ord],
+          status: tm.status,
+          dataRealizacao: tm.realizacao ? new Date(tm.realizacao) : null,
+          dataVencimento: tm.vencimento ? new Date(tm.vencimento) : null,
+        },
+      });
+    }
+  }
+
+  // ── Documentos ──
+  const DOCS: { ord: number; tipo: TipoDocumento; nome: string }[] = [
+    { ord: 1, tipo: 'CONTRATO', nome: 'contrato-trabalho' },
+    { ord: 1, tipo: 'RG', nome: 'rg' },
+    { ord: 2, tipo: 'CONTRATO', nome: 'contrato-trabalho' },
+    { ord: 5, tipo: 'ASO', nome: 'aso-admissional' },
+    { ord: 10, tipo: 'ASO', nome: 'aso-periodico' },
+    { ord: 13, tipo: 'CONTRATO', nome: 'contrato-estagio' },
+    { ord: 15, tipo: 'CONTRATO', nome: 'contrato-experiencia' },
+    { ord: 15, tipo: 'EXAME', nome: 'exame-admissional' },
+  ];
+  for (const d of DOCS) {
+    await prisma.documento.create({
+      data: {
+        colaboradorId: idPorOrd[d.ord],
+        tipo: d.tipo,
+        arquivoUrl: `/uploads/${idPorOrd[d.ord]}/${d.nome}.pdf`,
+      },
+    });
+  }
+
+  // ── Avaliações de desempenho (ciclo 2025) ──
+  const AVALS: { ord: number; ciclo: string; periodo: string; gestor: number; auto: number }[] = [
+    { ord: 4, ciclo: '2025', periodo: 'Anual 2025', gestor: 8.5, auto: 8.0 },
+    { ord: 5, ciclo: '2025', periodo: 'Anual 2025', gestor: 9.0, auto: 8.5 },
+    { ord: 6, ciclo: '2025', periodo: 'Anual 2025', gestor: 7.8, auto: 8.2 },
+    { ord: 7, ciclo: '2025', periodo: 'Anual 2025', gestor: 7.5, auto: 8.0 },
+    { ord: 10, ciclo: '2025', periodo: 'Anual 2025', gestor: 8.0, auto: 7.5 },
+    { ord: 11, ciclo: '2025', periodo: 'Anual 2025', gestor: 8.8, auto: 9.0 },
+  ];
+  for (const a of AVALS) {
+    await prisma.avaliacaoDesempenho.create({
+      data: {
+        colaboradorId: idPorOrd[a.ord],
+        ciclo: a.ciclo,
+        periodo: a.periodo,
+        notaGestor: a.gestor,
+        notaAutoavaliacao: a.auto,
+      },
     });
   }
 
